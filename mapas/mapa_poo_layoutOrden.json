@@ -1,0 +1,48 @@
+{
+  "cam": {
+    "x": 60,
+    "y": 40,
+    "sc": 0.38
+  },
+  "nodes": {
+    "Juego":          { "x": 900,  "y": 80  },
+    "met_batalla":    { "x": 1120, "y": 80  },
+    "par_p1p2":       { "x": 1340, "y": 80  },
+    "ret_batalla":    { "x": 1560, "y": 80  },
+
+    "obj_barbaro":    { "x": 300,  "y": 260 },
+    "obj_sacerdote":  { "x": 560,  "y": 260 },
+    "obj_hacha":      { "x": 1240, "y": 260 },
+    "obj_tunica":     { "x": 1500, "y": 260 },
+
+    "Personaje":      { "x": 900,  "y": 440 },
+
+    "met_getAtaque":  { "x": 540,  "y": 440 },
+    "met_atacar":     { "x": 700,  "y": 560 },
+    "par_objetivo":   { "x": 540,  "y": 620 },
+    "met_getArmadura":{ "x": 1100, "y": 560 },
+    "met_recibirDanio":{"x": 1260, "y": 440 },
+    "par_danio":      { "x": 1440, "y": 560 },
+    "met_equipar":    { "x": 1440, "y": 440 },
+
+    "attr_nombre":    { "x": 560,  "y": 720 },
+    "attr_vida":      { "x": 720,  "y": 800 },
+    "attr_ataque":    { "x": 880,  "y": 850 },
+    "attr_equipo":    { "x": 1060, "y": 800 },
+    "attr_furia":     { "x": 300,  "y": 1060},
+
+    "Barbaro":        { "x": 480,  "y": 1060},
+    "Sacerdote":      { "x": 900,  "y": 1060},
+    "PersAdicional":  { "x": 1300, "y": 1060},
+
+    "ov_atacarBarb":  { "x": 300,  "y": 1240},
+    "ov_recibirSac":  { "x": 900,  "y": 1240},
+
+    "Equipo":         { "x": 1760, "y": 440 },
+    "attr_modAtk":    { "x": 1620, "y": 620 },
+    "attr_modArm":    { "x": 1900, "y": 620 },
+
+    "Arma":           { "x": 1620, "y": 820 },
+    "Armadura":       { "x": 1900, "y": 820 }
+  }
+}

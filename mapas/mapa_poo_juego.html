@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Mapa POO — Juego</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#0d1117;overflow:hidden;font-family:'Courier New',monospace}
+#bar{position:fixed;top:0;left:0;right:0;height:44px;background:#161b22;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:7px;padding:0 12px;z-index:50;flex-wrap:wrap}
+#bar h1{font-size:12px;color:#3fb950;font-weight:700;white-space:nowrap}
+.btn{padding:3px 9px;border-radius:5px;border:1px solid #30363d;background:#21262d;color:#e6edf3;font-size:10px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#30363d}
+.leg{display:flex;gap:6px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:3px;font-size:8.5px;color:#8b949e}
+.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.lline{width:18px;height:2px;flex-shrink:0;border-radius:1px}
+#svg-wrap{position:fixed;top:44px;left:0;right:0;bottom:24px}
+svg{width:100%;height:100%;display:block;cursor:grab}
+#foot{position:fixed;bottom:0;left:0;right:0;height:24px;background:#161b22;border-top:1px solid #30363d;display:flex;align-items:center;padding:0 10px;font-size:8.5px;color:#8b949e;gap:10px}
+#foot span{margin-left:auto}
+#tip{position:fixed;display:none;background:#161b22;border:1px solid #30363d;border-radius:7px;padding:10px 13px;width:300px;font-size:10px;color:#e6edf3;line-height:1.55;box-shadow:0 6px 24px #000a;z-index:100;pointer-events:none}
+#tip h3{font-size:11.5px;color:#fff;margin-bottom:2px}
+#tip .ts{font-size:8px;color:#8b949e;margin-bottom:6px}
+#tip pre{font-size:8.5px;color:#8b949e;white-space:pre-wrap;background:#0d1117;padding:5px 7px;border-radius:4px;border:1px solid #30363d;margin-bottom:5px}
+#tip .ti{font-size:9.5px;color:#c9d1d9;margin-bottom:4px}
+#tip .tr{font-size:8px;white-space:pre-wrap}
+#tip .tc{font-size:8px;color:#484f58;margin-top:5px}
+/* Edit panel */
+#editPanel{position:fixed;right:0;top:44px;bottom:24px;width:260px;background:#161b22;border-left:1px solid #30363d;padding:10px 12px;display:none;overflow-y:auto;z-index:40;font-size:10px;color:#e6edf3}
+#editPanel h2{font-size:11px;color:#3fb950;margin-bottom:8px;border-bottom:1px solid #30363d;padding-bottom:5px}
+#editPanel label{display:block;color:#8b949e;font-size:9px;margin-top:7px;margin-bottom:2px}
+#editPanel input,#editPanel select,#editPanel textarea{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:9px;font-family:'Courier New',monospace;padding:4px 6px}
+#editPanel textarea{height:60px;resize:vertical}
+#editPanel .row{display:flex;gap:5px;margin-top:8px}
+#editPanel .row button{flex:1;padding:4px 0;border-radius:4px;border:1px solid #30363d;background:#21262d;color:#e6edf3;font-size:9px;cursor:pointer}
+#editPanel .row button:hover{background:#30363d}
+#editPanel .row button.danger{border-color:#f85149;color:#f85149}
+#editPanel .row button.danger:hover{background:#3d1515}
+</style>
+</head>
+<body>
+<div id="bar">
+  <h1>🎮 Mapa POO — Juego</h1>
+  <button class="btn" onclick="resetView()">⊞ Fit</button>
+  <button class="btn" onclick="toggleLbl()">🏷 Etiquetas</button>
+  <button class="btn" onclick="toggleEditMode()" id="btnEdit" style="border-color:#d29922;color:#d29922">✏️ Editar nodo</button>
+  <button class="btn" style="background:#1a3a1f;border-color:#2ea043;color:#56d364" onclick="saveLayout()">💾 Guardar JSON</button>
+  <button class="btn" style="background:#1a2f60;border-color:#388bfd;color:#79c0ff" onclick="document.getElementById('fileIn').click()">📂 Cargar JSON</button>
+  <input id="fileIn" type="file" accept=".json" style="display:none" onchange="loadLayout(event)"/>
+  <div class="leg">
+    <div class="li"><div class="ld" style="background:#2ea043"></div>Clase</div>
+    <div class="li"><div class="ld" style="background:#388bfd"></div>Objeto/Instancia</div>
+    <div class="li"><div class="ld" style="background:#d29922"></div>Parámetro</div>
+    <div class="li"><div class="ld" style="background:#e07c2a"></div>Método</div>
+    <div class="li"><div class="ld" style="background:#bc8cff"></div>Atributo</div>
+    <div class="li"><div class="ld" style="background:#f0883e"></div>Retorno</div>
+    <hr style="width:1px;height:12px;border:none;background:#30363d;margin:0 3px">
+    <div class="li"><div class="lline" style="background:#58a6ff"></div>hereda</div>
+    <div class="li"><div class="lline" style="background:#2ea043"></div>tiene (agregación)</div>
+    <div class="li"><div class="lline" style="background:#d29922;height:2px;border-top:none;border-bottom:none;background:repeating-linear-gradient(90deg,#d29922 0,#d29922 4px,transparent 4px,transparent 8px)"></div>composición</div>
+    <div class="li"><div class="lline" style="background:#e07c2a"></div>llama/usa</div>
+    <div class="li"><div class="lline" style="background:#f85149"></div>override</div>
+  </div>
+</div>
+<div id="svg-wrap">
+  <svg id="S" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+        <path d="M80 0L0 0 0 80" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)" id="bgGrid"/>
+    <g id="G">
+      <g id="edges"></g>
+      <g id="edgeLabels"></g>
+      <g id="nodes"></g>
+    </g>
+  </svg>
+</div>
+<div id="foot">
+  <span>🖱 Drag=mover · Rueda=zoom · Drag nodo=reubicar · Click=info · ✏️ Editar=doble clic</span>
+  <span id="sb"></span>
+</div>
+<div id="tip">
+  <h3 id="t-title"></h3>
+  <div class="ts" id="t-sub"></div>
+  <pre id="t-code"></pre>
+  <div class="ti" id="t-info"></div>
+  <div class="tr" id="t-rels"></div>
+  <div class="tc">Click de nuevo para cerrar · Doble clic para editar</div>
+</div>
+<!-- Panel de edición de nodo -->
+<div id="editPanel">
+  <h2>✏️ Editar nodo</h2>
+  <label>ID</label><input id="ep-id" readonly style="color:#555"/>
+  <label>Etiqueta (usa \n para saltos)</label><input id="ep-lb" oninput="liveEdit()"/>
+  <label>Grupo</label>
+  <select id="ep-g" onchange="liveEdit()">
+    <option value="clase">clase (verde)</option>
+    <option value="objeto">objeto (azul)</option>
+    <option value="parametro">parametro (amarillo)</option>
+    <option value="metodo">metodo (naranjo)</option>
+    <option value="atributo">atributo (violeta)</option>
+    <option value="retorno">retorno (naranja claro)</option>
+    <option value="juego">juego (gris)</option>
+  </select>
+  <label>Info (tooltip)</label><textarea id="ep-info" oninput="liveEdit()"></textarea>
+  <label>Código (tooltip)</label><textarea id="ep-code" oninput="liveEdit()"></textarea>
+  <div class="row">
+    <button onclick="applyEdit()" style="border-color:#2ea043;color:#56d364">✔ Aplicar</button>
+    <button onclick="closeEdit()">✖ Cerrar</button>
+    <button class="danger" onclick="deleteNode()">🗑 Borrar</button>
+  </div>
+  <div class="row">
+    <button onclick="addNodePrompt()" style="border-color:#388bfd;color:#79c0ff">＋ Nuevo nodo</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATOS: Nodos del sistema POO Juego
+// grupos: clase=verde, objeto=azul, parametro=amarillo, metodo=naranjo, atributo=violeta
+// ═══════════════════════════════════════════════════════════════
+const N=[
+ // ── Clases principales ──────────────────────────────────────
+ {id:"Juego",       lb:"Juego",          g:"juego",
+  info:"Clase principal. Contiene Main() y el método estático Batalla().",
+  code:"class Juego {\n  public static void Main()\n  public static Personaje? Batalla(Personaje p1,Personaje p2)\n}",
+  x:1400,y:200},
+ {id:"Personaje",   lb:"Personaje",      g:"clase",
+  info:"Clase base abstracta. Todos los personajes heredan de aquí.",
+  code:"class Personaje {\n  - string nombre\n  - int vida\n  - int ataque\n  - Equipo? equipo\n}",
+  x:1400,y:600},
+ {id:"Barbaro",     lb:"Bárbaro",        g:"clase",
+  info:"Hereda de Personaje. Override de Atacar(). Tiene atributo furia.",
+  code:"class Barbaro : Personaje {\n  - int furia\n  + override void Atacar(Personaje objetivo)\n}",
+  x:800,y:1050},
+ {id:"Sacerdote",   lb:"Sacerdote",      g:"clase",
+  info:"Hereda de Personaje. Override de RecibirDanio(). Bendición 1/4 veces.",
+  code:"class Sacerdote : Personaje {\n  + override void RecibirDanio(int danio)\n}",
+  x:1400,y:1050},
+ {id:"PersAdicional",lb:"Personaje\nAdicional", g:"clase",
+  info:"Clase personalizada que hereda de Personaje. Debe tener habilidad única.",
+  code:"class PersonajeAdicional : Personaje {\n  // tu habilidad aquí\n}",
+  x:2000,y:1050},
+ {id:"Equipo",      lb:"Equipo",         g:"clase",
+  info:"Clase base de equipamiento. Tiene dos modificadores.",
+  code:"class Equipo {\n  - int modificadorAtaque\n  - int modificadorArmadura\n  + int getModificadorAtaque()\n  + int getModificadorArmadura()\n}",
+  x:2300,y:600},
+ {id:"Arma",        lb:"Arma",           g:"clase",
+  info:"Hereda de Equipo. Solo modifica el ataque. modificadorArmadura=0.",
+  code:"class Arma : Equipo {\n  + Arma(int modificadorAtaque)\n  // modArmadura = 0\n}",
+  x:2100,y:1050},
+ {id:"Armadura",    lb:"Armadura",       g:"clase",
+  info:"Hereda de Equipo. Solo modifica la armadura. modificadorAtaque=0.",
+  code:"class Armadura : Equipo {\n  + Armadura(int modificadorArmadura)\n  // modAtaque = 0\n}",
+  x:2500,y:1050},
+ // ── Instancias (objetos creados en Main) ────────────────────
+ {id:"obj_sacerdote",lb:"sacerdote\n:Sacerdote", g:"objeto",
+  info:'Instancia: new Sacerdote("Samson", 30, 5)',
+  code:'Personaje sacerdote = new Sacerdote("Samson", 30, 5);',
+  x:1150,y:380},
+ {id:"obj_barbaro",  lb:"barbaro\n:Bárbaro",    g:"objeto",
+  info:'Instancia: new Barbaro("Dave", 30, 7, 10)',
+  code:'Personaje barbaro = new Barbaro("Dave", 30, 7, 10);',
+  x:900,y:380},
+ {id:"obj_tunica",   lb:"tunica\n:Armadura",    g:"objeto",
+  info:"Instancia: new Armadura(5) — da 5 de armadura al Sacerdote.",
+  code:"Equipo tunica = new Armadura(5);",
+  x:1650,y:380},
+ {id:"obj_hacha",    lb:"hacha\n:Arma",         g:"objeto",
+  info:"Instancia: new Arma(6) — da +6 de ataque al Bárbaro.",
+  code:"Equipo hacha = new Arma(6);",
+  x:1900,y:380},
+ // ── Atributos de Personaje ───────────────────────────────────
+ {id:"attr_nombre",  lb:"nombre\n:string",      g:"atributo",
+  info:"Nombre del personaje. Encapsulado (private). Acceso via getNombre().",
+  code:"private string nombre;",
+  x:950,y:730},
+ {id:"attr_vida",    lb:"vida\n:int",           g:"atributo",
+  info:"Vida restante. No puede quedar bajo 0. private.",
+  code:"private int vida;",
+  x:1100,y:800},
+ {id:"attr_ataque",  lb:"ataque\n:int",         g:"atributo",
+  info:"Daño base del personaje. private.",
+  code:"private int ataque;",
+  x:1250,y:860},
+ {id:"attr_equipo",  lb:"equipo\n:Equipo?",     g:"atributo",
+  info:"Equipo equipado actualmente. Puede ser null. private.",
+  code:"private Equipo? equipo = null;",
+  x:1700,y:860},
+ {id:"attr_furia",   lb:"furia\n:int",          g:"atributo",
+  info:"Solo del Bárbaro. Se consume 3 por ataque furioso. private.",
+  code:"private int furia;",
+  x:600,y:1200},
+ {id:"attr_modAtk",  lb:"modAtaque\n:int",      g:"atributo",
+  info:"Modificador de ataque del equipo. private.",
+  code:"private int modificadorAtaque;",
+  x:2100,y:800},
+ {id:"attr_modArm",  lb:"modArmadura\n:int",    g:"atributo",
+  info:"Modificador de armadura del equipo. private.",
+  code:"private int modificadorArmadura;",
+  x:2450,y:800},
+ // ── Métodos de Personaje ─────────────────────────────────────
+ {id:"met_getAtaque",lb:"getAtaque()\n→int",    g:"metodo",
+  info:"Retorna ataque + modificadorAtaqueEquipo. Si no hay equipo, solo ataque.",
+  code:"public int getAtaque(){\n  if(equipo==null) return ataque;\n  return ataque + equipo.getModificadorAtaque();\n}",
+  x:1050,y:620},
+ {id:"met_getArmadura",lb:"getArmadura()\n→int",g:"metodo",
+  info:"Retorna armadura del equipo equipado, o 0 si no hay equipo.",
+  code:"public int getArmadura(){\n  if(equipo==null) return 0;\n  return equipo.getModificadorArmadura();\n}",
+  x:1550,y:620},
+ {id:"met_atacar",   lb:"Atacar()\nvirtual",    g:"metodo",
+  info:"Llama a recibirDanio(getAtaque()) en el objetivo. Imprime quién ataca a quién.",
+  code:'public virtual void Atacar(Personaje objetivo){\n  Console.WriteLine($"{nombre} ataca a {objetivo.getNombre()}");\n  objetivo.RecibirDanio(getAtaque());\n}',
+  x:1400,y:450},
+ {id:"met_recibirDanio",lb:"RecibirDanio()\nvirtual",g:"metodo",
+  info:"Calcula dañoTotal = danio - armadura (mín 1). Resta de vida. vida no baja de 0.",
+  code:"public virtual void RecibirDanio(int danio){\n  int d = Math.Max(1, danio - getArmadura());\n  vida = Math.Max(0, vida - d);\n  // imprime daño recibido y si murió\n}",
+  x:1700,y:500},
+ {id:"met_equipar",  lb:"Equipar()\nvoid",      g:"metodo",
+  info:"Reemplaza el equipo actual del personaje. Solo se puede tener uno.",
+  code:"public void Equipar(Equipo e){ equipo = e; }",
+  x:1900,y:500},
+ // ── Overrides ────────────────────────────────────────────────
+ {id:"ov_atacarBarb",lb:"Atacar()\noverride",   g:"metodo",
+  info:"Override del Bárbaro. Con furia≥3: daño×1.15, furia-=3. Sin furia: daño×0.5. Redondea.",
+  code:'public override void Atacar(Personaje objetivo){\n  if(furia>=3){ furia-=3; /* daño *1.15 */ }\n  else { /* daño *0.5 */ }\n}',
+  x:700,y:1200},
+ {id:"ov_recibirSac",lb:"RecibirDanio()\noverride",g:"metodo",
+  info:"Override del Sacerdote. 1 de cada 4 ataques reduce el daño a la mitad. Imprime plegaria.",
+  code:"public override void RecibirDanio(int danio){\n  // contador %4==0 → danio = (int)Math.Round(danio/2.0)\n  base.RecibirDanio(danio);\n}",
+  x:1400,y:1230},
+ // ── Parámetros clave ─────────────────────────────────────────
+ {id:"par_p1p2",     lb:"p1:Personaje\np2:Personaje",g:"parametro",
+  info:"Parámetros del método Batalla(). p1 y p2 se atacan simultáneamente por rondas.",
+  code:"public static Personaje? Batalla(Personaje p1, Personaje p2)",
+  x:1200,y:200},
+ {id:"par_danio",    lb:"danio\n:int",           g:"parametro",
+  info:"Parámetro de RecibirDanio. Entero con el daño del ataque recibido.",
+  code:"public virtual void RecibirDanio(int danio)",
+  x:1850,y:680},
+ {id:"par_objetivo", lb:"objetivo\n:Personaje",  g:"parametro",
+  info:"Parámetro de Atacar. El personaje que recibirá el daño.",
+  code:"public virtual void Atacar(Personaje objetivo)",
+  x:1250,y:500},
+ // ── Método Batalla ───────────────────────────────────────────
+ {id:"met_batalla",  lb:"Batalla()\n→Personaje?",g:"metodo",
+  info:"Método estático. Simula batalla por rondas. Ambos atacan simultáneo. Retorna ganador o null.",
+  code:"public static Personaje? Batalla(Personaje p1, Personaje p2){\n  while(p1.getVida()>0 && p2.getVida()>0){\n    p1.Atacar(p2); p2.Atacar(p1);\n  }\n  if(p1.getVida()>0) return p1;\n  if(p2.getVida()>0) return p2;\n  return null;\n}",
+  x:1400,y:310},
+ // ── Retornos ─────────────────────────────────────────────────
+ {id:"ret_batalla",  lb:"Personaje?\no null",    g:"retorno",
+  info:"Retorno de Batalla(). El ganador, o null si ambos mueren en la misma ronda.",
+  code:"return ganador; // o return null;",
+  x:1600,y:200},
+];
+
+// ═══════════════════════════════════════════════════════════════
+// ARISTAS con tipo, etiqueta y color
+// tp: hereda|tiene|composicion|usa|llama|override|sets|creates
+// ═══════════════════════════════════════════════════════════════
+const E=[
+ // Herencia de Personaje
+ {s:"Personaje",t:"Barbaro",      tp:"hereda",  lb:"extends"},
+ {s:"Personaje",t:"Sacerdote",    tp:"hereda",  lb:"extends"},
+ {s:"Personaje",t:"PersAdicional",tp:"hereda",  lb:"extends"},
+ // Herencia de Equipo
+ {s:"Equipo",t:"Arma",            tp:"hereda",  lb:"extends"},
+ {s:"Equipo",t:"Armadura",        tp:"hereda",  lb:"extends"},
+ // Agregación Personaje→Equipo
+ {s:"Personaje",t:"Equipo",       tp:"tiene",   lb:"equipo (0..1)"},
+ // Composición Juego→Personaje / Equipo
+ {s:"Juego",t:"Personaje",        tp:"composicion",lb:"usa"},
+ {s:"Juego",t:"Equipo",           tp:"composicion",lb:"usa"},
+ // Instancias desde Juego/Main
+ {s:"Juego",t:"obj_sacerdote",    tp:"creates", lb:"new Sacerdote()"},
+ {s:"Juego",t:"obj_barbaro",      tp:"creates", lb:"new Bárbaro()"},
+ {s:"Juego",t:"obj_tunica",       tp:"creates", lb:"new Armadura()"},
+ {s:"Juego",t:"obj_hacha",        tp:"creates", lb:"new Arma()"},
+ // Instancias → sus clases
+ {s:"obj_sacerdote",t:"Sacerdote",tp:"instanceof",lb:"es de tipo"},
+ {s:"obj_barbaro",t:"Barbaro",    tp:"instanceof",lb:"es de tipo"},
+ {s:"obj_tunica",t:"Armadura",    tp:"instanceof",lb:"es de tipo"},
+ {s:"obj_hacha",t:"Arma",         tp:"instanceof",lb:"es de tipo"},
+ // Equipar
+ {s:"obj_sacerdote",t:"obj_tunica",tp:"usa",    lb:"Equipar()"},
+ {s:"obj_barbaro",t:"obj_hacha",  tp:"usa",     lb:"Equipar()"},
+ // Atributos de Personaje
+ {s:"Personaje",t:"attr_nombre",  tp:"tiene",   lb:"private"},
+ {s:"Personaje",t:"attr_vida",    tp:"tiene",   lb:"private"},
+ {s:"Personaje",t:"attr_ataque",  tp:"tiene",   lb:"private"},
+ {s:"Personaje",t:"attr_equipo",  tp:"tiene",   lb:"private"},
+ // Atributos de Equipo
+ {s:"Equipo",t:"attr_modAtk",     tp:"tiene",   lb:"private"},
+ {s:"Equipo",t:"attr_modArm",     tp:"tiene",   lb:"private"},
+ // Atributo de Bárbaro
+ {s:"Barbaro",t:"attr_furia",     tp:"tiene",   lb:"private"},
+ // Métodos de Personaje
+ {s:"Personaje",t:"met_getAtaque",    tp:"tiene",lb:"método"},
+ {s:"Personaje",t:"met_getArmadura",  tp:"tiene",lb:"método"},
+ {s:"Personaje",t:"met_atacar",       tp:"tiene",lb:"virtual"},
+ {s:"Personaje",t:"met_recibirDanio", tp:"tiene",lb:"virtual"},
+ {s:"Personaje",t:"met_equipar",      tp:"tiene",lb:"método"},
+ // getAtaque usa equipo
+ {s:"met_getAtaque",t:"attr_ataque",  tp:"llama",lb:"lee"},
+ {s:"met_getAtaque",t:"attr_equipo",  tp:"llama",lb:"lee"},
+ // getArmadura usa equipo
+ {s:"met_getArmadura",t:"attr_equipo",tp:"llama",lb:"lee"},
+ // Atacar llama RecibirDanio y getAtaque
+ {s:"met_atacar",t:"met_recibirDanio",tp:"llama",lb:"objetivo.RecibirDanio()"},
+ {s:"met_atacar",t:"met_getAtaque",   tp:"llama",lb:"getAtaque()"},
+ // RecibirDanio usa vida y getArmadura
+ {s:"met_recibirDanio",t:"attr_vida", tp:"sets",lb:"vida-=daño"},
+ {s:"met_recibirDanio",t:"met_getArmadura",tp:"llama",lb:"getArmadura()"},
+ // Equipar setea atributo equipo
+ {s:"met_equipar",t:"attr_equipo",    tp:"sets",lb:"equipo=e"},
+ // Parámetros
+ {s:"met_batalla",t:"par_p1p2",       tp:"tiene",lb:"params"},
+ {s:"met_atacar",t:"par_objetivo",    tp:"tiene",lb:"param"},
+ {s:"met_recibirDanio",t:"par_danio", tp:"tiene",lb:"param"},
+ {s:"met_batalla",t:"ret_batalla",    tp:"sets",lb:"retorna"},
+ // Juego llama Batalla
+ {s:"Juego",t:"met_batalla",          tp:"llama",lb:"Batalla(p1,p2)"},
+ // Overrides
+ {s:"Barbaro",t:"ov_atacarBarb",      tp:"override",lb:"override"},
+ {s:"Sacerdote",t:"ov_recibirSac",    tp:"override",lb:"override"},
+ {s:"met_atacar",t:"ov_atacarBarb",   tp:"override",lb:"sobreescribe"},
+ {s:"met_recibirDanio",t:"ov_recibirSac",tp:"override",lb:"sobreescribe"},
+ // Override Bárbaro usa furia
+ {s:"ov_atacarBarb",t:"attr_furia",   tp:"sets",lb:"furia-=3"},
+];
+
+// ═══════════════════════════════════════════════════════════════
+// ESTILOS de grupos y tipos de arista
+// ═══════════════════════════════════════════════════════════════
+const GRP={
+ clase:     {fill:"#0d2010",stroke:"#2ea043",r:36,tc:"#56d364"},
+ objeto:    {fill:"#0e1e40",stroke:"#388bfd",r:30,tc:"#79c0ff"},
+ parametro: {fill:"#221800",stroke:"#d29922",r:24,tc:"#e3b341"},
+ metodo:    {fill:"#1e1000",stroke:"#e07c2a",r:28,tc:"#f0a060"},
+ atributo:  {fill:"#160b2e",stroke:"#8957e5",r:22,tc:"#bc8cff"},
+ retorno:   {fill:"#1e1400",stroke:"#f0883e",r:22,tc:"#f0a060"},
+ juego:     {fill:"#161b22",stroke:"#8b949e",r:38,tc:"#e0e0e0"},
+};
+// Colores y dash por tipo de arista
+const EC={
+ hereda:    {c:"#58a6ff",dash:"none",   w:2.0, label:"#58a6ff"},
+ tiene:     {c:"#2ea043",dash:"none",   w:1.2, label:"#3fb950"},
+ composicion:{c:"#d29922",dash:"6,3",  w:1.5, label:"#e3b341"},
+ usa:       {c:"#e07c2a",dash:"none",   w:1.2, label:"#f0a060"},
+ llama:     {c:"#e07c2a",dash:"4,3",   w:1.2, label:"#f0a060"},
+ override:  {c:"#f85149",dash:"none",   w:2.0, label:"#f85149"},
+ sets:      {c:"#bc8cff",dash:"3,3",   w:1.0, label:"#bc8cff"},
+ creates:   {c:"#3fb950",dash:"5,3",   w:1.5, label:"#56d364"},
+ instanceof:{c:"#79c0ff",dash:"3,4",   w:1.0, label:"#79c0ff"},
+};
+
+// Cargar posiciones del JSON si existe
+const SAVED_POS = {"layout":{"x":2061.6,"y":-22.5},"hc":{"x":2167.9,"y":216},"hc_list":{"x":2336.2,"y":232.3},"a_idx":{"x":1045.1,"y":500.5}};
+
+// ── Estado ──────────────────────────────────────────────────────
+const svgEl=document.getElementById("S");
+const G=document.getElementById("G");
+const pos={};
+N.forEach(n=>{pos[n.id]={x:n.x,y:n.y};});
+const nm={};N.forEach(n=>nm[n.id]=n);
+let cam={x:0,y:0,sc:0.28};
+let dragN=null,dOff={x:0,y:0};
+let active=null,showLbl=true,editMode=false;
+let edgeEls={},nodeEls={},edgeLabelEls={};
+
+// ── SVG helpers ──────────────────────────────────────────────────
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,par){
+ const e=document.createElementNS(NS,tag);
+ for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);
+ if(par)par.appendChild(e);
+ return e;
+}
+
+// ── Build edges ──────────────────────────────────────────────────
+function buildEdges(){
+ const ec=document.getElementById("edges"); ec.innerHTML="";
+ const elc=document.getElementById("edgeLabels"); elc.innerHTML="";
+ edgeEls={};edgeLabelEls={};
+ // markers por tipo
+ const defs=svgEl.querySelector("defs");
+ defs.querySelectorAll(".dynMarker").forEach(m=>m.remove());
+ Object.entries(EC).forEach(([tp,s])=>{
+  const m=el("marker",{id:"arr-"+tp,markerWidth:8,markerHeight:8,
+   refX:7,refY:4,orient:"auto",class:"dynMarker"},defs);
+  el("polygon",{points:"0 0,8 4,0 8",fill:s.c},m);
+ });
+ // también marcador triángulo hueco para herencia
+ {
+  const m=el("marker",{id:"arr-hereda2",markerWidth:10,markerHeight:10,
+   refX:9,refY:5,orient:"auto",class:"dynMarker"},defs);
+  el("polygon",{points:"1 1,9 5,1 9",fill:"none",stroke:"#58a6ff","stroke-width":"1.2"},m);
+ }
+ E.forEach((e,i)=>{
+  const a=nm[e.s],b=nm[e.t];if(!a||!b)return;
+  const s=EC[e.tp]||EC.usa;
+  const g=el("g",{opacity:"0.5"},ec);
+  const mEnd=e.tp==="hereda"?"url(#arr-hereda2)":`url(#arr-${e.tp})`;
+  const line=el("line",{stroke:s.c,"stroke-width":s.w,
+   "stroke-dasharray":s.dash,
+   "marker-end":mEnd},g);
+  // Label sobre la arista
+  const lg=el("g",{opacity:"0",display:"none"},elc);
+  const lbg=el("rect",{fill:"#0d111799",rx:"3"},lg);
+  const ltx=el("text",{x:0,y:0,"text-anchor":"middle","dominant-baseline":"middle",
+   "font-size":"9","font-family":"Courier New","font-weight":"normal",fill:s.label},lg);
+  ltx.textContent=e.lb;
+  edgeEls[i]={g,line,e};
+  edgeLabelEls[i]={lg,lbg,ltx,e};
+ });
+}
+
+// ── Build nodes ──────────────────────────────────────────────────
+function buildNodes(){
+ const nc=document.getElementById("nodes"); nc.innerHTML="";
+ nodeEls={};
+ N.forEach(n=>{
+  const g2=GRP[n.g]||GRP.atributo;
+  const ng=el("g",{cursor:"pointer"},nc);
+  const circ=el("circle",{r:g2.r,fill:g2.fill,stroke:g2.stroke,"stroke-width":"1.5"},ng);
+  // Borde extra para grupos visualmente distintos
+  if(n.g==="juego"){
+   el("circle",{r:g2.r+5,fill:"none",stroke:g2.stroke,"stroke-width":"0.6","stroke-dasharray":"4,3","opacity":"0.5"},ng);
+  }
+  // Etiqueta multilínea
+  const lines=n.lb.split("\n");
+  const fs=Math.max(6,Math.min(10,g2.r*0.28));
+  const lh=fs*1.35;
+  lines.forEach((l,i)=>{
+   el("text",{x:0,y:(-(lines.length-1)/2+i)*lh,
+    "text-anchor":"middle","dominant-baseline":"middle","font-size":fs,
+    fill:g2.tc,"font-family":"Courier New","font-weight":"bold","stroke":"none"},ng)
+    .textContent=l;
+  });
+  // Icono de grupo pequeño en esquina
+  const icon={"clase":"◆","objeto":"●","parametro":"▲","metodo":"▶","atributo":"◉","retorno":"◀","juego":"★"};
+  const ico=el("text",{x:g2.r*0.62,y:-g2.r*0.62,
+   "text-anchor":"middle","dominant-baseline":"middle","font-size":g2.r*0.28,
+   fill:g2.stroke,opacity:"0.8","stroke":"none"},ng);
+  ico.textContent=icon[n.g]||"•";
+
+  ng.addEventListener("mouseenter",()=>{if(!active||active.id!==n.id)applyHL(n);});
+  ng.addEventListener("mouseleave",()=>{if(!active||active.id!==n.id)applyHL(null);});
+  ng.addEventListener("click",ev=>{ev.stopPropagation();onNodeClick(n,ev);});
+  ng.addEventListener("dblclick",ev=>{ev.stopPropagation();openEdit(n);});
+  // drag
+  ng.addEventListener("pointerdown",ev=>{
+   ev.stopPropagation();
+   const w=toWorld(ev.clientX,ev.clientY);
+   dragN=n; dOff={x:w.x-pos[n.id].x,y:w.y-pos[n.id].y};
+   ng.setPointerCapture(ev.pointerId);
+  });
+  ng.addEventListener("pointermove",ev=>{
+   if(!dragN||dragN.id!==n.id)return;
+   const w=toWorld(ev.clientX,ev.clientY);
+   pos[n.id]={x:w.x-dOff.x,y:w.y-dOff.y};
+   updatePositions();
+  });
+  ng.addEventListener("pointerup",()=>{dragN=null;});
+  nodeEls[n.id]={ng,circ,g2};
+ });
+}
+
+// ── Posiciones ────────────────────────────────────────────────────
+function toWorld(cx,cy){
+ const r=svgEl.getBoundingClientRect();
+ return{x:(cx-r.left-cam.x)/cam.sc,y:(cy-r.top-cam.y)/cam.sc};
+}
+function updatePositions(){
+ N.forEach(n=>{
+  const e2=nodeEls[n.id];if(!e2)return;
+  e2.ng.setAttribute("transform",`translate(${pos[n.id].x},${pos[n.id].y})`);
+ });
+ Object.values(edgeEls).forEach(({line,e})=>{
+  const a=nm[e.s],b=nm[e.t];if(!a||!b)return;
+  const pa=pos[a.id],pb=pos[b.id];
+  const ga=GRP[a.g]||GRP.atributo,gb=GRP[b.g]||GRP.atributo;
+  const dx=pb.x-pa.x,dy=pb.y-pa.y,L=Math.sqrt(dx*dx+dy*dy);
+  if(L<1)return;
+  const ux=dx/L,uy=dy/L;
+  const x1=pa.x+ux*(ga.r+2),y1=pa.y+uy*(ga.r+2);
+  const x2=pb.x-ux*(gb.r+10),y2=pb.y-uy*(gb.r+10);
+  line.setAttribute("x1",x1);line.setAttribute("y1",y1);
+  line.setAttribute("x2",x2);line.setAttribute("y2",y2);
+ });
+ Object.values(edgeLabelEls).forEach(({lg,lbg,ltx,e})=>{
+  const a=nm[e.s],b=nm[e.t];if(!a||!b)return;
+  const pa=pos[a.id],pb=pos[b.id];
+  const mx=(pa.x+pb.x)/2,my=(pa.y+pb.y)/2;
+  ltx.setAttribute("x",mx);ltx.setAttribute("y",my);
+  const tw=ltx.textContent.length*5.5+10;
+  lbg.setAttribute("x",mx-tw/2);lbg.setAttribute("y",my-8);
+  lbg.setAttribute("width",tw);lbg.setAttribute("height",14);
+ });
+}
+
+// ── Cámara ────────────────────────────────────────────────────────
+function applyCam(){
+ G.setAttribute("transform",`translate(${cam.x},${cam.y}) scale(${cam.sc})`);
+ const gp=svgEl.querySelector("#bgGrid");
+ if(gp)gp.setAttribute("patternTransform",
+  `translate(${(cam.x%(80*cam.sc))},${(cam.y%(80*cam.sc))}) scale(${cam.sc})`);
+}
+function fitAll(){
+ const wrap=document.getElementById("svg-wrap");
+ const W=wrap.clientWidth||window.innerWidth;
+ const H=wrap.clientHeight||(window.innerHeight-68);
+ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+ N.forEach(n=>{
+  const g=GRP[n.g]||GRP.atributo;
+  x0=Math.min(x0,n.x-g.r);y0=Math.min(y0,n.y-g.r);
+  x1=Math.max(x1,n.x+g.r);y1=Math.max(y1,n.y+g.r);
+ });
+ // usar pos actual no n.x
+ N.forEach(n=>{
+  const g=GRP[n.g]||GRP.atributo;
+  x0=Math.min(x0,pos[n.id].x-g.r);y0=Math.min(y0,pos[n.id].y-g.r);
+  x1=Math.max(x1,pos[n.id].x+g.r);y1=Math.max(y1,pos[n.id].y+g.r);
+ });
+ const pad=60;
+ cam.sc=Math.min((W-pad*2)/(x1-x0),(H-pad*2)/(y1-y0),1.5);
+ cam.x=W/2-(x0+x1)/2*cam.sc;
+ cam.y=H/2-(y0+y1)/2*cam.sc;
+ applyCam();
+}
+function resetView(){active=null;applyHL(null);hideTip();fitAll();}
+function toggleLbl(){showLbl=!showLbl;applyHL(active);}
+
+// ── Pan ────────────────────────────────────────────────────────────
+let panStart=null;
+svgEl.addEventListener("pointerdown",ev=>{
+ if(ev.target.closest("g[cursor]"))return;
+ panStart={sx:ev.clientX,sy:ev.clientY,cx:cam.x,cy:cam.y};
+ svgEl.setPointerCapture(ev.pointerId);
+ svgEl.style.cursor="grabbing";
+});
+svgEl.addEventListener("pointermove",ev=>{
+ if(!panStart)return;
+ cam.x=panStart.cx+(ev.clientX-panStart.sx);
+ cam.y=panStart.cy+(ev.clientY-panStart.sy);
+ applyCam();
+});
+svgEl.addEventListener("pointerup",()=>{panStart=null;svgEl.style.cursor="grab";});
+svgEl.addEventListener("wheel",ev=>{
+ ev.preventDefault();
+ const r=svgEl.getBoundingClientRect();
+ const sx=ev.clientX-r.left,sy=ev.clientY-r.top;
+ const f=ev.deltaY<0?1.13:0.88;
+ const wx=(sx-cam.x)/cam.sc,wy=(sy-cam.y)/cam.sc;
+ cam.sc=Math.max(0.04,Math.min(5,cam.sc*f));
+ cam.x=sx-wx*cam.sc;cam.y=sy-wy*cam.sc;
+ applyCam();
+},{passive:false});
+
+// ── Highlight ──────────────────────────────────────────────────────
+function applyHL(n){
+ const hiId=n?n.id:null;
+ N.forEach(nd=>{
+  const e2=nodeEls[nd.id];if(!e2)return;
+  const isHi=hiId&&nd.id===hiId;
+  const dim=hiId&&nd.id!==hiId;
+  e2.ng.style.opacity=dim?"0.18":"1";
+  e2.circ.setAttribute("stroke",isHi?"#fff":e2.g2.stroke);
+  e2.circ.setAttribute("stroke-width",isHi?"3":"1.5");
+ });
+ Object.keys(edgeEls).forEach(i=>{
+  const {g,e}=edgeEls[i];
+  const {lg}=edgeLabelEls[i];
+  const isHi=hiId&&(e.s===hiId||e.t===hiId);
+  g.setAttribute("opacity",hiId?(isHi?"1":"0.05"):"0.5");
+  lg.setAttribute("display",isHi&&showLbl?"":"none");
+  lg.setAttribute("opacity",isHi?"1":"0");
+ });
+}
+
+// ── Tooltip ────────────────────────────────────────────────────────
+function onNodeClick(n,ev){
+ if(active&&active.id===n.id){active=null;applyHL(null);hideTip();return;}
+ active=n;applyHL(n);showTip(n,ev.clientX,ev.clientY);
+}
+function showTip(n,cx,cy){
+ const clr={clase:"#56d364",objeto:"#79c0ff",parametro:"#e3b341",
+             metodo:"#f0a060",atributo:"#bc8cff",retorno:"#f0883e",juego:"#e0e0e0"};
+ document.getElementById("t-title").textContent=n.lb.replace(/\n/g," ");
+ document.getElementById("t-title").style.color=clr[n.g]||"#fff";
+ document.getElementById("t-sub").textContent=`[${n.g}]  id: ${n.id}`;
+ document.getElementById("t-code").textContent=n.code||"";
+ document.getElementById("t-info").textContent=n.info||"";
+ const rels=E.filter(e=>e.s===n.id||e.t===n.id);
+ const clrel={hereda:"#58a6ff",tiene:"#3fb950",composicion:"#e3b341",
+               usa:"#f0a060",llama:"#f0a060",override:"#f85149",
+               sets:"#bc8cff",creates:"#56d364",instanceof:"#79c0ff"};
+ const rText=rels.map(e=>{
+  const arrow=e.s===n.id?`→ ${e.t}`:`← ${e.s}`;
+  return `[${e.tp}] ${arrow}  (${e.lb})`;
+ }).join("\n");
+ const tr=document.getElementById("t-rels");
+ tr.textContent=rText;
+ tr.style.color="#8b949e";
+ const tip=document.getElementById("tip");
+ tip.style.display="block";
+ let lx=cx+16,ly=cy-22;
+ if(lx+310>window.innerWidth)lx=cx-316;
+ if(ly+280>window.innerHeight)ly=window.innerHeight-285;
+ if(ly<48)ly=48;
+ tip.style.left=lx+"px";tip.style.top=ly+"px";
+}
+function hideTip(){document.getElementById("tip").style.display="none";}
+svgEl.addEventListener("click",()=>{active=null;applyHL(null);hideTip();});
+
+// ── Edit panel ─────────────────────────────────────────────────────
+let editTarget=null;
+function toggleEditMode(){
+ editMode=!editMode;
+ document.getElementById("btnEdit").style.background=editMode?"#221800":"";
+ toast(editMode?"✏️ Modo edición ON — doble clic en un nodo":"Modo edición OFF","#d29922");
+}
+function openEdit(n){
+ editTarget=n;
+ document.getElementById("ep-id").value=n.id;
+ document.getElementById("ep-lb").value=n.lb;
+ document.getElementById("ep-g").value=n.g;
+ document.getElementById("ep-info").value=n.info||"";
+ document.getElementById("ep-code").value=n.code||"";
+ document.getElementById("editPanel").style.display="block";
+ hideTip();
+}
+function liveEdit(){
+ if(!editTarget)return;
+ const ne=nodeEls[editTarget.id];if(!ne)return;
+ const g2=GRP[document.getElementById("ep-g").value]||GRP.atributo;
+ ne.circ.setAttribute("fill",g2.fill);
+ ne.circ.setAttribute("stroke",g2.stroke);
+}
+function applyEdit(){
+ if(!editTarget)return;
+ editTarget.lb=document.getElementById("ep-lb").value;
+ editTarget.g=document.getElementById("ep-g").value;
+ editTarget.info=document.getElementById("ep-info").value;
+ editTarget.code=document.getElementById("ep-code").value;
+ nm[editTarget.id]=editTarget;
+ buildEdges();buildNodes();updatePositions();applyHL(null);
+ toast("✔ Nodo actualizado","#56d364");
+}
+function closeEdit(){document.getElementById("editPanel").style.display="none";editTarget=null;}
+function deleteNode(){
+ if(!editTarget)return;
+ if(!confirm(`¿Borrar nodo "${editTarget.lb.replace(/\n/g," ")}"?`))return;
+ const idx=N.findIndex(n=>n.id===editTarget.id);
+ if(idx>=0)N.splice(idx,1);
+ delete nm[editTarget.id];delete pos[editTarget.id];
+ // borrar aristas relacionadas
+ for(let i=E.length-1;i>=0;i--){
+  if(E[i].s===editTarget.id||E[i].t===editTarget.id)E.splice(i,1);
+ }
+ closeEdit();
+ buildEdges();buildNodes();updatePositions();applyHL(null);
+ document.getElementById("sb").textContent=`nodos: ${N.length} | aristas: ${E.length}`;
+ toast("🗑 Nodo eliminado","#f85149");
+}
+function addNodePrompt(){
+ const id=prompt("ID único para el nuevo nodo:");
+ if(!id||nm[id]){toast("ID vacío o ya existe","#f85149");return;}
+ const lb=prompt("Etiqueta (\\n para salto de línea):")||id;
+ const newN={id,lb:lb.replace(/\\n/g,"\n"),g:"clase",info:"",code:"",x:1400,y:700};
+ N.push(newN);nm[id]=newN;pos[id]={x:1400,y:700};
+ buildEdges();buildNodes();updatePositions();
+ openEdit(newN);
+ document.getElementById("sb").textContent=`nodos: ${N.length} | aristas: ${E.length}`;
+ toast("＋ Nodo creado","#58a6ff");
+}
+
+// ── Guardar/Cargar JSON ────────────────────────────────────────────
+function saveLayout(){
+ const data={
+  cam:{x:Math.round(cam.x*100)/100,y:Math.round(cam.y*100)/100,sc:Math.round(cam.sc*10000)/10000},
+  nodes:{}
+ };
+ N.forEach(n=>{
+  data.nodes[n.id]={x:Math.round(pos[n.id].x*10)/10,y:Math.round(pos[n.id].y*10)/10};
+ });
+ const a=document.createElement("a");
+ a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(data,null,2));
+ a.download="mapa_poo_layout.json";a.click();
+ toast("💾 Layout guardado como mapa_poo_layout.json","#56d364");
+}
+function loadLayout(ev){
+ const file=ev.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  try{
+   const data=JSON.parse(e.target.result);
+   let loaded=0;
+   if(data.nodes){
+    Object.entries(data.nodes).forEach(([id,p])=>{
+     if(pos[id]&&typeof p.x==="number"&&typeof p.y==="number"){
+      pos[id]={x:p.x,y:p.y};loaded++;
+     }
+    });
+   }
+   if(data.cam&&typeof data.cam.sc==="number"){
+    cam.x=data.cam.x;cam.y=data.cam.y;cam.sc=data.cam.sc;applyCam();
+   }
+   updatePositions();
+   toast(`📂 Layout cargado · ${loaded}/${N.length} nodos restaurados`,"#58a6ff");
+  }catch(err){toast("❌ Error JSON: "+err.message,"#f85149");}
+ };
+ reader.readAsText(file);ev.target.value="";
+}
+
+// ── Toast ──────────────────────────────────────────────────────────
+function toast(msg,color){
+ color=color||"#56d364";
+ const t=document.createElement("div");
+ t.style.cssText=`position:fixed;bottom:34px;left:50%;transform:translateX(-50%);
+  background:#161b22;border:1px solid ${color};color:${color};
+  font-size:10px;font-family:'Courier New',monospace;
+  padding:6px 16px;border-radius:6px;z-index:999;
+  box-shadow:0 4px 16px #0008;pointer-events:none;opacity:1;transition:opacity .4s`;
+ t.textContent=msg;document.body.appendChild(t);
+ setTimeout(()=>{t.style.opacity="0";setTimeout(()=>t.remove(),400);},2600);
+}
+
+// ── Init ───────────────────────────────────────────────────────────
+buildEdges();
+buildNodes();
+updatePositions();
+document.getElementById("sb").textContent=`nodos: ${N.length} | aristas: ${E.length}`;
+requestAnimationFrame(()=>requestAnimationFrame(fitAll));
+window.addEventListener("resize",()=>{if(!active)fitAll();});
+</script>
+</body>
+</html>
