@@ -2,7 +2,6 @@
 {
     public class Datos
     {   
-        
         public string? usuario_ { get; set; } 
         //los campos tienen_ y el signo de interrogacion porque pueden ser nulos, ya que en la base de datos pueden ser nulos
         public string? contraseña_ { get; set; } 
