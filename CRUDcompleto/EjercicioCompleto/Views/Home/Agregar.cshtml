@@ -1,12 +1,12 @@
-﻿@{
-    ViewData["Title"] = "Agregar";
+@{
+    //titulo "agregar" en ViewData 
+    ViewData["Title"] = "Agregar";  
 }
-
 <h1>Agregar</h1>
-
 <br />
+<!-- FORMULARIO DE INGRESO -->
 <form asp-controller="Home" asp-action="Nuevo" method="post">
-    @* asp conttoler es "Home" asp action es funcion "Nuevo" con method es "post" *@
+    @* asp controler es "Home" asp action es funcion "Nuevo" con method es "post" *@
     <div style="width: 50%;margin: 0 auto;">
         @* tabla para añadir*@
         <table>
@@ -16,7 +16,7 @@
                 <td style="width:40%"><label>Añadir Usuario</label></td>
                 <td><input type="text" name="txtUsuarioNuevo" /></td>
             </tr>
-            @* fila para añadir nuevo contraseña *@
+            @* fila para añadir nueva contraseña *@
             <tr>
                 <td style="width:40%"><label>Añadir Contraseña</label></td>
                 <td><input type="password" name="txtContraseñaNuevo" /></td>
@@ -34,6 +34,7 @@
     </div>
 </form>
 <br />
+<!-- TABLA CON LOS REGISTROS  -->
 @* tabla de los registros ingresados para crud *@
 <div style="width: 100%;margin: 0 auto;">
     <table border="1" width="100%">
@@ -50,14 +51,14 @@
             if (ViewBag.respuesta != null)
             {
                 //agrega a la tabla los registros ingresados para crud
-                foreach (var usuarios in ViewBag.respuesta)
+                foreach (var usuario in ViewBag.respuesta)
                 {
                     <tr>
-                        <td>@usuarios.usuario_</td>
-                        <td>@usuarios.contraseña_</td>
+                        <td>@usuario.usuario_</td>
+                        <td>@usuario.contraseña_</td>
                         <td>
                             @{
-                                if (usuarios.habilitado_ == "on")
+                                if (usuario.habilitado_ == "on")
                                 {
                                     <label>HABILITADO</label>
                                 }
@@ -70,16 +71,16 @@
                         @* para accion del boton Editar del registro seleccionado *@
                         <td>
                             <form asp-action="Editar" method="post">
-                                <input type="hidden" name="txtEditarUsuario" value="@usuarios.usuario_" />
-                                <input type="hidden" name="txtEditarContraseña" value="@usuarios.contraseña_" />
-                                <input type="hidden" name="chkEditarHabilitado" value="@usuarios.habilitado_" />
+                                <input type="hidden" name="txtEditarUsuario" value="@usuario.usuario_" />
+                                <input type="hidden" name="txtEditarContraseña" value="@usuario.contraseña_" />
+                                <input type="hidden" name="chkEditarHabilitado" value="@usuario.habilitado_" />
                                 <input type="submit" value="Editar" />
                             </form>
                         </td>
                         @* para accion del boton Eliminar del registro seleccionado *@
                         <td>
                             <form asp-action="Eliminar" method="post">
-                                <input type="hidden" name="txtUsuarioEliminar" value="@usuarios.usuario_" />
+                                <input type="hidden" name="txtUsuarioEliminar" value="@usuario.usuario_" />
                                 <input type="submit" value="Eliminar" />
                             </form>
                         </td>
