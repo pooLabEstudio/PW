@@ -1,0 +1,76 @@
+﻿@* Importa espacio de nombres de modelos para tipo de datos. *@
+@using PW_Ejercicios.Models 
+@{
+    ViewData["Title"] = "Ejercicio 3 - Triplicar o Dividir";        // Define el título de la pestaña del navegador.
+}
+@* Contenedor total fondo oscuro y texto claro *@
+<div class="container-fluid min-vh-100 bg-dark text-light p-5">
+    @* Estructura responsiva de pantalla completa y tema dark. *@
+    <div class="row justify-content-center">
+        @* Centra el contenido horizontalmente en la grilla de Bootstrap. *@
+        <div class="col-md-8">
+            @* ancho máximo 8 columnas para disp medianos y superiores. *@
+            @* Encabezado tipografía gruesa y línea separadora inf. *@
+            <h1 class="display-5 fw-bold mb-4 border-bottom border-secondary pb-2">
+                Triplicar / Dividir 
+            </h1>
+            @* Formulario estilo input dark *@
+            <form asp-controller="Home" asp-action="CalcularTriplicar" method="post" class="mb-5 p-4 bg-secondary bg-opacity-10 rounded-3 border border-secondary">
+                @* Envía datos al controlador x POST. *@
+                <div class="row align-items-center">
+                    @* Alinea verticalmente elementos internos del form*@
+                    <div class="col-auto">
+                        <label class="form-label mb-0">Ingrese un número</label>
+                    </div>
+                    <div class="col-sm-4">
+                        @* La clase bg-dark en el input *@
+                        <input type="number" name="txtNumero" class="form-control bg-dark text-white border-secondary" required />@* Input numérico obligatorio con estilo dark. *@
+                    </div>
+                    <div class="col-auto">
+                        @* Botón dispara el envío del formulario. *@
+                        <button type="submit" class="btn btn-primary px-4">Generar</button>
+                    </div>
+                </div>
+            </form>
+            @* despliega errores o mensajes  *@
+            @if (ViewBag.error != null)
+            @* Bloque condicional: se ejecuta solo si existe un mensaje de error en el servidor. *@
+            {
+                <div class="alert alert-danger bg-danger bg-opacity-25 text-danger border-danger mb-4">
+                    @* Muestra dinámicamente el error contenido en el objeto ViewBag. *@
+                    <strong>Error:</strong> @ViewBag.error 
+                </div>
+            }
+            @* Grilla con estilo 'table-dark' con contraste total *@
+            <div class="table-responsive shadow-lg">
+                @* Contenedor con scroll lateral automático y sombra proyectada. *@
+                <table class="table table-dark table-striped table-hover border-secondary mb-0">
+                    @* Tabla oscura con filas cebradas y efecto hover. *@
+                    <thead class="text-info text-uppercase small">
+                        @* Encabezado en azul cyan, mayúsculas y fuente reducida. *@
+                        <tr>
+                            <th class="py-3">NÚMERO</th>
+                            <th class="py-3">MENOR A 50 (Es Triplicado)</th>
+                            <th class="py-3">MAYOR O IGUAL A 50 (Es Dividido)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        @* Alinea el contenido de las celdas al centro verticalmente. *@
+                        @if (ViewBag.respuesta != null)@* Valida que la lista de resultados no sea nula antes de iterar. *@
+                        {
+                            foreach (var item in ViewBag.respuesta) //recorre: viewbag cargando registros
+                            {
+                                <tr>
+                                    <td class="fw-bold fs-5 text-secondary">@item.numero</td>@* Muestra el valor original ingresado. *@
+                                    @* Uso de colores semánticos: verde para éxito/menor, naranja para división *@
+                                    <td class="text-success fw-bold">@(item.mensaje == "Menor a 50" ? item.total : "—")</td>@* Lógica ternaria para mostrar resultado o guion según mensaje. *@
+                                    <td class="text-warning fw-bold">@(item.mensaje == "Mayor o igual a 50" ? item.total : "—")</td>@* Aplica color preventivo para operaciones de división. *@
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
