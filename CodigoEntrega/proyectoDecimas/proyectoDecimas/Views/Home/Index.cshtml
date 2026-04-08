@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Parquímetro";
+}
+
+<form asp-action="Calcular" method="post"> @*Este formulario se une al método del controlador por el nombre*@
+    <label>Ingrese los minutos: </label>
+    <input type="number" name="minutos" required /> @*el required valida para el navegador pero el inspeccionar podría borrar este campo generando un error*@
+    <button type="submit">Calcular Pago</button> 
+</form>
+<br />
+@if(ViewBag.Total != null)
+{
+    <h3>El total a pagar es $@ViewBag.Total CLP</h3> @*aquí mostraremos el resultado que nos entregue el metodo del controlador*@
+}

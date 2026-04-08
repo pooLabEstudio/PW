@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewData["Title"] = "Carrera";
+}
+
+<h2>Calculadora de Velocidad Promedio</h2>
+<p>Ingrese los siguientes datos para calcular km/hr</p>
+
+<form asp-action="CalcularVelocidad" method="post">
+    <label>Distancia recorrida (metros): </label>
+    <input type="number" step="any" name="metros" required /><br /><br />
+
+    <label>Minutos: </label>
+    <input type="number" name="minutos" required /><br /><br />
+
+    <label>Segundos: </label>
+    <input type="number" name="segundos" required /><br /><br />
+
+    <label>Centésimas: </label>
+    <input type="number" name="centesimas" required /><br /><br />
+
+    <button type="submit">Calcular Velocidad</button> 
+</form>
+
+<br />
+
+@*Zona de resultados*@
+@if(ViewBag.Velocidad != null)
+{
+    <h3 style="color: blue">La velocidad promedio del atleta es @ViewBag.Velocidad km/hr</h3>
+}

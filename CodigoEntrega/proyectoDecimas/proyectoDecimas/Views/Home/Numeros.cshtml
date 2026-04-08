@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewData["Title"] = "Grilla de datos";
+}
+
+<h2>Calculadora con Historial</h2>
+<p>Ingrese un numero para calcular y guardar</p>
+
+<form asp-action="CalcularGrilla" method="post">
+    <label>Ingrese un numero:</label>
+    <input type="number" step="any" name="numero" required />
+
+    <button type="submit">Calcular</button>
+
+    <hr />
+
+    <h3>Historial de Operaciones</h3>
+
+    <table border="1" cellpadding="5">
+        <thead>
+            <tr>
+                <th>Numero ingresado</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @*verificamos que el viewbag traiga el historial*@
+            @if(ViewBag.Historial != null)
+                {
+                    @*Este foreach creara una fila <tr> y una celda <th> para cada elemento nuevo*@
+                    foreach(var item in ViewBag.Historial)
+                    {
+                        <tr>
+                            <td>@item.NumeroIngresado</td>
+                            <td>@item.ResultadoCalculado</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+    </table>
+
+
+</form>
+
