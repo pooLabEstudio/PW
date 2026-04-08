@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Mapa Mental MVC</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0e1117;
+  font-family: 'Caveat', cursive;
+  overflow: hidden;
+  width: 100vw; height: 100vh;
+  cursor: default;
+  user-select: none;
+}
+
+/* fondo cuadriculado tipo papel */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none;
+}
+
+canvas {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.node {
+  position: absolute;
+  border-radius: 14px;
+  padding: 10px 16px;
+  cursor: grab;
+  z-index: 10;
+  transition: box-shadow .2s, transform .15s;
+  min-width: 120px;
+  text-align: center;
+  border: 2px solid transparent;
+}
+.node:hover { transform: scale(1.06); }
+.node:active { cursor: grabbing; }
+
+.node-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: .01em;
+}
+.node-sub {
+  font-size: .72rem;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: .75;
+  margin-top: 3px;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+/* ── CENTRO ── */
+.node-center {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-color: #e2e8f0;
+  box-shadow: 0 0 40px rgba(226,232,240,.15), 0 8px 32px rgba(0,0,0,.6);
+  min-width: 160px;
+}
+.node-center .node-title { font-size: 1.5rem; color: #f8fafc; }
+.node-center .node-sub   { color: #94a3b8; font-size: .65rem; }
+
+/* ── VISTAS ── */
+.node-v {
+  background: linear-gradient(135deg, #0c3547, #0a2a38);
+  border-color: #4fc3f7;
+  box-shadow: 0 0 20px rgba(79,195,247,.2), 0 4px 16px rgba(0,0,0,.5);
+}
+.node-v .node-title { color: #4fc3f7; }
+.node-v .node-sub   { color: #7dd3fc; }
+
+/* ── CONTROLADOR ── */
+.node-c {
+  background: linear-gradient(135deg, #2d2200, #1a1400);
+  border-color: #ffd54f;
+  box-shadow: 0 0 20px rgba(255,213,79,.2), 0 4px 16px rgba(0,0,0,.5);
+}
+.node-c .node-title { color: #ffd54f; }
+.node-c .node-sub   { color: #fde68a; }
+
+/* ── MODELO ── */
+.node-m {
+  background: linear-gradient(135deg, #0a2014, #061a10);
+  border-color: #6ee7b7;
+  box-shadow: 0 0 20px rgba(110,231,183,.2), 0 4px 16px rgba(0,0,0,.5);
+}
+.node-m .node-title { color: #6ee7b7; }
+.node-m .node-sub   { color: #a7f3d0; }
+
+/* ── LAYOUT ── */
+.node-l {
+  background: linear-gradient(135deg, #1e0a2e, #160720);
+  border-color: #c084fc;
+  box-shadow: 0 0 20px rgba(192,132,252,.2), 0 4px 16px rgba(0,0,0,.5);
+}
+.node-l .node-title { color: #c084fc; }
+.node-l .node-sub   { color: #d8b4fe; }
+
+/* ── ACCION ── */
+.node-a {
+  background: linear-gradient(135deg, #1f0a0a, #160606);
+  border-color: #f87171;
+  box-shadow: 0 0 16px rgba(248,113,113,.15), 0 4px 12px rgba(0,0,0,.5);
+  min-width: 100px;
+}
+.node-a .node-title { color: #f87171; font-size: .9rem; }
+.node-a .node-sub   { color: #fca5a5; }
+
+/* ── ABSTRACCION ── */
+.node-abs {
+  background: linear-gradient(135deg, #1a1a0a, #12120a);
+  border-color: #facc15;
+  box-shadow: 0 0 16px rgba(250,204,21,.15), 0 4px 12px rgba(0,0,0,.5);
+  min-width: 110px;
+}
+.node-abs .node-title { color: #facc15; font-size: .88rem; }
+.node-abs .node-sub   { color: #fde68a; }
+
+/* tooltip */
+.tooltip {
+  position: fixed;
+  background: #1e2433;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+  max-width: 300px;
+  pointer-events: none;
+  z-index: 100;
+  display: none;
+  white-space: pre-wrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,.7);
+}
+
+/* controles */
+.controls {
+  position: fixed;
+  bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 10px;
+  z-index: 50;
+}
+.btn {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #94a3b8;
+  font-family: 'Caveat', cursive;
+  font-size: .85rem;
+  padding: 6px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.btn:hover { background: rgba(255,255,255,.14); color: #e2e8f0; }
+
+.hint {
+  position: fixed; top: 14px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; color: #475569;
+  pointer-events: none; z-index: 50;
+  letter-spacing: .05em;
+}
+</style>
+</head>
+<body>
+
+<canvas id="cvs"></canvas>
+<div class="tooltip" id="tip"></div>
+<div class="hint">↔ arrastra nodos · hover = detalle · doble-click = expandir</div>
+
+<!-- ══════════════ NODOS ══════════════ -->
+
+<!-- CENTRO -->
+<div class="node node-center" id="n-mvc" data-tip="Patrón arquitectural&#10;Model · View · Controller&#10;Jueves20260312&#10;ASP.NET Core MVC">
+  <div class="node-title">MVC</div>
+  <div class="node-sub">Jueves20260312&#10;ASP.NET Core</div>
+</div>
+
+<!-- CAPA V -->
+<div class="node node-v" id="n-vistas" data-tip="4 archivos .cshtml&#10;Son el HTML que ve el usuario&#10;Usan @Razor para código C#">
+  <div class="node-title">VISTAS</div>
+  <div class="node-sub">V = 4 archivos</div>
+</div>
+
+<div class="node node-l" id="n-layout" data-tip="_Layout.cshtml&#10;─────────────&#10;Contenedor GLOBAL&#10;navbar + @RenderBody() + footer&#10;Carga Bootstrap + jQuery">
+  <div class="node-title">_Layout</div>
+  <div class="node-sub">@RenderBody()</div>
+</div>
+
+<div class="node node-v" id="n-index" data-tip="Index.cshtml&#10;─────────────&#10;GET /&#10;Página de bienvenida&#10;Solo contenido estático">
+  <div class="node-title">Index</div>
+  <div class="node-sub">Welcome</div>
+</div>
+
+<div class="node node-v" id="n-privacy" data-tip="Privacy.cshtml&#10;─────────────&#10;GET /Home/Privacy&#10;Política de privacidad&#10;Usa @ViewData[&quot;Title&quot;]">
+  <div class="node-title">Privacy</div>
+  <div class="node-sub">@ViewData[Title]</div>
+</div>
+
+<div class="node node-v" id="n-ejemplo" data-tip="Ejemplo.cshtml&#10;─────────────&#10;POST /Home/validar&#10;Formulario usuario + contraseña&#10;Muestra @ViewBag.respuesta en rojo">
+  <div class="node-title">Ejemplo</div>
+  <div class="node-sub">form → validar&#10;@ViewBag.respuesta</div>
+</div>
+
+<div class="node node-v" id="n-agregar" data-tip="Agregar.cshtml&#10;─────────────&#10;GET /Home/Agregar&#10;Formulario + tabla de registros&#10;⚠ &lt;td&gt; pendientes de llenar&#10;itera ViewBag.registros">
+  <div class="node-title">Agregar</div>
+  <div class="node-sub">form + tabla&#10;⚠ td pendiente</div>
+</div>
+
+<!-- CAPA C -->
+<div class="node node-c" id="n-ctrl" data-tip="HomeController.cs&#10;─────────────&#10;6 acciones públicas&#10;Hereda de Controller&#10;static List&lt;Datos&gt; listado">
+  <div class="node-title">HomeController</div>
+  <div class="node-sub">C = 6 acciones</div>
+</div>
+
+<div class="node node-a" id="n-aindex" data-tip="public IActionResult Index()&#10;{&#10;  return View();&#10;}&#10;→ Index.cshtml">
+  <div class="node-title">Index()</div>
+  <div class="node-sub">return View()</div>
+</div>
+
+<div class="node node-a" id="n-aprivacy" data-tip="public IActionResult Privacy()&#10;{&#10;  return View();&#10;}&#10;→ Privacy.cshtml">
+  <div class="node-title">Privacy()</div>
+  <div class="node-sub">return View()</div>
+</div>
+
+<div class="node node-a" id="n-ax" data-tip="public IActionResult x()&#10;{&#10;  return View(&quot;Ejemplo&quot;);&#10;}&#10;URL: /Home/x&#10;Vista: Ejemplo.cshtml">
+  <div class="node-title">x()</div>
+  <div class="node-sub">→ &quot;Ejemplo&quot;</div>
+</div>
+
+<div class="node node-a" id="n-avalid" data-tip="validar(txtUsuario, txtContraseña)&#10;─────────────&#10;if (txtUsuario == null)&#10;  ViewBag.respuesta = &quot;vacio&quot;&#10;else&#10;  ViewBag.respuesta = &quot;usuario: &quot;+...&#10;return View(&quot;Ejemplo&quot;)">
+  <div class="node-title">validar()</div>
+  <div class="node-sub">if/else + ViewBag</div>
+</div>
+
+<div class="node node-a" id="n-aagregar" data-tip="public IActionResult Agregar()&#10;{&#10;  return View();&#10;}&#10;→ Agregar.cshtml vacío">
+  <div class="node-title">Agregar()</div>
+  <div class="node-sub">return View()</div>
+</div>
+
+<div class="node node-a" id="n-anuevo" data-tip="Nuevo(txtNuevoUsuario, txtNuevaContraseña, chkHabilitado)&#10;─────────────&#10;listado.Add(new Datos(){...})&#10;ViewBag.registros = listado&#10;return View(&quot;Agregar&quot;)">
+  <div class="node-title">Nuevo()</div>
+  <div class="node-sub">Add + ViewBag</div>
+</div>
+
+<!-- CAPA M -->
+<div class="node node-m" id="n-modelo" data-tip="Datos.cs&#10;─────────────&#10;public class Datos&#10;{&#10;  string? usuario_&#10;  string? contraseña_&#10;  string? habilitado_&#10;}&#10;? = nullable">
+  <div class="node-title">Modelo</div>
+  <div class="node-sub">Datos.cs</div>
+</div>
+
+<div class="node node-m" id="n-datos" data-tip="public class Datos&#10;{&#10;  public string? usuario_    { get; set; }&#10;  public string? contraseña_ { get; set; }&#10;  public string? habilitado_ { get; set; }&#10;}">
+  <div class="node-title">class Datos</div>
+  <div class="node-sub">usuario_&#10;contraseña_&#10;habilitado_</div>
+</div>
+
+<div class="node node-m" id="n-lista" data-tip="static List&lt;Datos&gt; listado&#10;─────────────&#10;static → persiste entre requests&#10;listado.Add(new Datos(){...})&#10;listado.Count&#10;listado[i].usuario_&#10;⚠ sin BD → se pierde al reiniciar">
+  <div class="node-title">List&lt;Datos&gt;</div>
+  <div class="node-sub">static listado&#10;.Add() .Count</div>
+</div>
+
+<!-- ABSTRACCION -->
+<div class="node node-abs" id="n-abs" data-tip="Verbos universales de programación&#10;independientes del lenguaje">
+  <div class="node-title">Abstracción</div>
+  <div class="node-sub">verbos universales</div>
+</div>
+
+<div class="node node-abs" id="n-declarar" data-tip="DECLARAR&#10;─────────────&#10;string? usuario_&#10;List&lt;Datos&gt; listado&#10;int i = 0">
+  <div class="node-title">Declarar</div>
+  <div class="node-sub">string? / List&lt;&gt;</div>
+</div>
+
+<div class="node node-abs" id="n-condicionar" data-tip="CONDICIONAR&#10;─────────────&#10;if (txtUsuario == null)&#10;{  ...  }&#10;else { ... }&#10;|| = ó    &amp;&amp; = y">
+  <div class="node-title">Condicionar</div>
+  <div class="node-sub">if / else&#10;|| &amp;&amp;</div>
+</div>
+
+<div class="node node-abs" id="n-iterar" data-tip="ITERAR&#10;─────────────&#10;for (int i=0; i &lt; ViewBag.registros.Count; i++)&#10;{&#10;  &lt;tr&gt;&lt;td&gt;...&lt;/td&gt;&lt;/tr&gt;&#10;}">
+  <div class="node-title">Iterar</div>
+  <div class="node-sub">for / Count</div>
+</div>
+
+<div class="node node-abs" id="n-modelar" data-tip="MODELAR&#10;─────────────&#10;public class Datos&#10;{ get; set; }&#10;new Datos() { ... }">
+  <div class="node-title">Modelar</div>
+  <div class="node-sub">class / new</div>
+</div>
+
+<div class="node node-abs" id="n-emitir" data-tip="EMITIR&#10;─────────────&#10;ViewBag.respuesta = ...&#10;return View(&quot;NombreVista&quot;)&#10;Datos del C → V">
+  <div class="node-title">Emitir</div>
+  <div class="node-sub">ViewBag&#10;return View()</div>
+</div>
+
+<div class="node node-abs" id="n-envolver" data-tip="ENVOLVER&#10;─────────────&#10;_Layout.cshtml&#10;@RenderBody()&#10;Todas las vistas se inyectan aquí">
+  <div class="node-title">Envolver</div>
+  <div class="node-sub">_Layout&#10;@RenderBody()</div>
+</div>
+
+<div class="controls">
+  <button class="btn" onclick="resetLayout()">↺ Reiniciar</button>
+  <button class="btn" onclick="toggleLines()">⌁ Líneas</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  POSICIONES INICIALES (% del viewport)
+// ═══════════════════════════════════════════════
+const W = () => window.innerWidth;
+const H = () => window.innerHeight;
+
+const INIT = {
+  // CENTRO
+  'n-mvc':        () => [W()*.45, H()*.40],
+  // VISTAS (izquierda)
+  'n-vistas':     () => [W()*.12, H()*.22],
+  'n-layout':     () => [W()*.03, H()*.08],
+  'n-index':      () => [W()*.02, H()*.30],
+  'n-privacy':    () => [W()*.02, H()*.46],
+  'n-ejemplo':    () => [W()*.10, H()*.62],
+  'n-agregar':    () => [W()*.02, H()*.75],
+  // CONTROLADOR (derecha)
+  'n-ctrl':       () => [W()*.72, H()*.22],
+  'n-aindex':     () => [W()*.82, H()*.08],
+  'n-aprivacy':   () => [W()*.83, H()*.22],
+  'n-ax':         () => [W()*.84, H()*.35],
+  'n-avalid':     () => [W()*.80, H()*.50],
+  'n-aagregar':   () => [W()*.82, H()*.63],
+  'n-anuevo':     () => [W()*.80, H()*.76],
+  // MODELO (abajo centro)
+  'n-modelo':     () => [W()*.42, H()*.72],
+  'n-datos':      () => [W()*.30, H()*.85],
+  'n-lista':      () => [W()*.54, H()*.85],
+  // ABSTRACCION (arriba)
+  'n-abs':        () => [W()*.44, H()*.05],
+  'n-declarar':   () => [W()*.22, H()*.05],
+  'n-condicionar':() => [W()*.32, H()*.05],
+  'n-iterar':     () => [W()*.56, H()*.05],
+  'n-modelar':    () => [W()*.66, H()*.05],
+  'n-emitir':     () => [W()*.76, H()*.05],
+  'n-envolver':   () => [W()*.14, H()*.14],
+};
+
+// ═══════════════════════════════════════════════
+//  CONEXIONES: [from, to, color, label]
+// ═══════════════════════════════════════════════
+const EDGES = [
+  // MVC → capas
+  ['n-mvc','n-vistas',   '#4fc3f7',''],
+  ['n-mvc','n-ctrl',     '#ffd54f',''],
+  ['n-mvc','n-modelo',   '#6ee7b7',''],
+  ['n-mvc','n-abs',      '#facc15',''],
+  // Layout envuelve vistas
+  ['n-vistas','n-layout','#c084fc','@RenderBody'],
+  ['n-vistas','n-index', '#4fc3f7',''],
+  ['n-vistas','n-privacy','#4fc3f7',''],
+  ['n-vistas','n-ejemplo','#4fc3f7',''],
+  ['n-vistas','n-agregar','#4fc3f7',''],
+  // Controlador → acciones
+  ['n-ctrl','n-aindex',  '#ffd54f',''],
+  ['n-ctrl','n-aprivacy','#ffd54f',''],
+  ['n-ctrl','n-ax',      '#ffd54f',''],
+  ['n-ctrl','n-avalid',  '#f87171','if/else'],
+  ['n-ctrl','n-aagregar','#ffd54f',''],
+  ['n-ctrl','n-anuevo',  '#c084fc','Add()'],
+  // Acciones ↔ vistas (ViewBag)
+  ['n-aindex','n-index', '#4fc3f7','View()'],
+  ['n-aprivacy','n-privacy','#4fc3f7','View()'],
+  ['n-ax','n-ejemplo',   '#ffd54f','View("Ejemplo")'],
+  ['n-avalid','n-ejemplo','#f87171','ViewBag'],
+  ['n-aagregar','n-agregar','#4fc3f7','View()'],
+  ['n-anuevo','n-agregar','#c084fc','ViewBag'],
+  // Controlador → Modelo
+  ['n-anuevo','n-datos', '#6ee7b7','new Datos()'],
+  ['n-modelo','n-datos', '#6ee7b7',''],
+  ['n-modelo','n-lista', '#6ee7b7','static'],
+  ['n-anuevo','n-lista', '#6ee7b7','Add()'],
+  // Abstraccion
+  ['n-abs','n-declarar',   '#facc15',''],
+  ['n-abs','n-condicionar','#facc15',''],
+  ['n-abs','n-iterar',     '#facc15',''],
+  ['n-abs','n-modelar',    '#facc15',''],
+  ['n-abs','n-emitir',     '#facc15',''],
+  ['n-abs','n-envolver',   '#c084fc',''],
+  // Abstraccion ↔ código
+  ['n-condicionar','n-avalid','#f87171',''],
+  ['n-iterar','n-agregar',   '#4fc3f7','for'],
+  ['n-modelar','n-datos',    '#6ee7b7','class'],
+  ['n-emitir','n-ctrl',      '#ffd54f','ViewBag'],
+  ['n-envolver','n-layout',  '#c084fc',''],
+  ['n-declarar','n-lista',   '#6ee7b7','List<>'],
+];
+
+// ═══════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════
+const nodes = {};
+let showLines = true;
+let dragging = null, ox = 0, oy = 0;
+
+function resetLayout() {
+  Object.entries(INIT).forEach(([id, fn]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const [x, y] = fn();
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+    nodes[id] = { x, y };
+  });
+  draw();
+}
+
+function toggleLines() { showLines = !showLines; draw(); }
+
+// ═══════════════════════════════════════════════
+//  CANVAS
+// ═══════════════════════════════════════════════
+const cvs = document.getElementById('cvs');
+const ctx = cvs.getContext('2d');
+
+function resize() {
+  cvs.width  = window.innerWidth;
+  cvs.height = window.innerHeight;
+  draw();
+}
+
+function center(id) {
+  const el = document.getElementById(id);
+  if (!el) return [0,0];
+  const r = el.getBoundingClientRect();
+  return [r.left + r.width/2, r.top + r.height/2];
+}
+
+function draw() {
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  if (!showLines) return;
+
+  EDGES.forEach(([a, b, color, label]) => {
+    const [x1,y1] = center(a);
+    const [x2,y2] = center(b);
+
+    // línea con curva suave
+    ctx.beginPath();
+    const cx = (x1+x2)/2 + (y2-y1)*.08;
+    const cy = (y1+y2)/2 - (x2-x1)*.08;
+    ctx.moveTo(x1,y1);
+    ctx.quadraticCurveTo(cx,cy,x2,y2);
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = .55;
+    ctx.setLineDash([]);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // punta de flecha pequeña
+    const angle = Math.atan2(y2-cy, x2-cx);
+    const aLen = 7;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - aLen*Math.cos(angle-0.4), y2 - aLen*Math.sin(angle-0.4));
+    ctx.lineTo(x2 - aLen*Math.cos(angle+0.4), y2 - aLen*Math.sin(angle+0.4));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.globalAlpha = .7;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // etiqueta
+    if (label) {
+      const mx = (x1+x2)/2;
+      const my = (y1+y2)/2;
+      ctx.font = '600 10px JetBrains Mono, monospace';
+      ctx.fillStyle = color;
+      ctx.globalAlpha = .85;
+      ctx.textAlign = 'center';
+      ctx.fillText(label, mx, my - 5);
+      ctx.globalAlpha = 1;
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  DRAG
+// ═══════════════════════════════════════════════
+document.querySelectorAll('.node').forEach(el => {
+  el.addEventListener('mousedown', e => {
+    dragging = el;
+    const r = el.getBoundingClientRect();
+    ox = e.clientX - r.left;
+    oy = e.clientY - r.top;
+    el.style.zIndex = 20;
+    e.preventDefault();
+  });
+
+  // tooltip
+  const tip = document.getElementById('tip');
+  el.addEventListener('mouseenter', e => {
+    const t = el.dataset.tip;
+    if (!t) return;
+    tip.textContent = t;
+    tip.style.display = 'block';
+  });
+  el.addEventListener('mousemove', e => {
+    tip.style.left = (e.clientX + 14) + 'px';
+    tip.style.top  = (e.clientY - 10) + 'px';
+  });
+  el.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+});
+
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const x = e.clientX - ox;
+  const y = e.clientY - oy;
+  dragging.style.left = x + 'px';
+  dragging.style.top  = y + 'px';
+  draw();
+});
+
+document.addEventListener('mouseup', () => {
+  if (dragging) { dragging.style.zIndex = 10; dragging = null; }
+});
+
+// touch
+document.querySelectorAll('.node').forEach(el => {
+  el.addEventListener('touchstart', e => {
+    dragging = el;
+    const r  = el.getBoundingClientRect();
+    ox = e.touches[0].clientX - r.left;
+    oy = e.touches[0].clientY - r.top;
+    e.preventDefault();
+  }, { passive: false });
+});
+document.addEventListener('touchmove', e => {
+  if (!dragging) return;
+  const x = e.touches[0].clientX - ox;
+  const y = e.touches[0].clientY - oy;
+  dragging.style.left = x + 'px';
+  dragging.style.top  = y + 'px';
+  draw();
+}, { passive: false });
+document.addEventListener('touchend', () => { dragging = null; });
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+window.addEventListener('resize', resize);
+resize();
+resetLayout();
+</script>
+</body>
+</html>
