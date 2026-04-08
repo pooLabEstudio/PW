@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>PW_Ejercicios - Pantallas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+</head>
+<body class="bg-light p-4">
+
+    <h4 class="mb-4">Simulación de Pantallas — PW_Ejercicios</h4>
+
+    <!-- NAVBAR común -->
+    <nav class="navbar navbar-dark bg-dark mb-2">
+        <div class="container">
+            <span class="navbar-brand">PW_Ejercicios</span>
+            <div class="d-flex gap-3">
+                <span class="nav-link text-white-50">Ejercicio 1</span>
+                <span class="nav-link text-white-50">Ejercicio 2</span>
+                <span class="nav-link text-white-50">Ejercicio 3</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- INDEX -->
+    <div class="border bg-white p-3 mb-5">
+        <small class="text-muted">📄 Views/Home/Index.cshtml</small>
+        <hr>
+        <h4>PW_Ejercicios</h4>
+        <p>Seleccione un ejercicio:</p>
+        <ul>
+            <li><a href="#">Ejercicio 1 - Parquímetro</a></li>
+            <li><a href="#">Ejercicio 2 - Velocidad Promedio</a></li>
+            <li><a href="#">Ejercicio 3 - Triplicar / Dividir</a></li>
+        </ul>
+    </div>
+
+    <!-- EJERCICIO 1 -->
+    <nav class="navbar navbar-dark bg-dark mb-2">
+        <div class="container">
+            <span class="navbar-brand">PW_Ejercicios</span>
+            <div class="d-flex gap-3">
+                <span class="nav-link text-white fw-bold">Ejercicio 1</span>
+                <span class="nav-link text-white-50">Ejercicio 2</span>
+                <span class="nav-link text-white-50">Ejercicio 3</span>
+            </div>
+        </div>
+    </nav>
+    <div class="border bg-white p-3 mb-5">
+        <small class="text-muted">📄 Views/Home/Ejercicio1.cshtml</small>
+        <hr>
+        <h4>Cobro Parquímetro</h4>
+        <form>
+            <div class="mb-2">
+                <label>Ingrese minutos estacionado</label><br>
+                <input type="number" value="38" class="form-control w-25" />
+            </div>
+            <input type="submit" value="Calcular" class="btn btn-primary btn-sm" />
+        </form>
+        <h5 class="mt-3" style="color:green;">2149</h5>
+        <small class="text-muted">→ $1850 base + 13 min adicionales × $23</small>
+    </div>
+
+    <!-- EJERCICIO 2 -->
+    <nav class="navbar navbar-dark bg-dark mb-2">
+        <div class="container">
+            <span class="navbar-brand">PW_Ejercicios</span>
+            <div class="d-flex gap-3">
+                <span class="nav-link text-white-50">Ejercicio 1</span>
+                <span class="nav-link text-white fw-bold">Ejercicio 2</span>
+                <span class="nav-link text-white-50">Ejercicio 3</span>
+            </div>
+        </div>
+    </nav>
+    <div class="border bg-white p-3 mb-5">
+        <small class="text-muted">📄 Views/Home/Ejercicio2.cshtml</small>
+        <hr>
+        <h4>Velocidad Promedio del Atleta</h4>
+        <form>
+            <div class="mb-2">
+                <label>Horas</label><br>
+                <input type="number" value="0" class="form-control w-25" />
+            </div>
+            <div class="mb-2">
+                <label>Minutos</label><br>
+                <input type="number" value="1" class="form-control w-25" />
+            </div>
+            <div class="mb-2">
+                <label>Segundos</label><br>
+                <input type="number" value="30" class="form-control w-25" />
+            </div>
+            <div class="mb-2">
+                <label>Centésimas de segundo</label><br>
+                <input type="number" value="45" class="form-control w-25" />
+            </div>
+            <div class="mb-2">
+                <label>Distancia (metros)</label><br>
+                <input type="number" value="500" class="form-control w-25" />
+            </div>
+            <input type="submit" value="Calcular" class="btn btn-primary btn-sm" />
+        </form>
+        <h5 class="mt-3" style="color:green;">19.98 km/hr</h5>
+    </div>
+
+    <!-- EJERCICIO 3 -->
+    <nav class="navbar navbar-dark bg-dark mb-2">
+        <div class="container">
+            <span class="navbar-brand">PW_Ejercicios</span>
+            <div class="d-flex gap-3">
+                <span class="nav-link text-white-50">Ejercicio 1</span>
+                <span class="nav-link text-white-50">Ejercicio 2</span>
+                <span class="nav-link text-white fw-bold">Ejercicio 3</span>
+            </div>
+        </div>
+    </nav>
+    <div class="border bg-white p-3 mb-5">
+        <small class="text-muted">📄 Views/Home/Ejercicio3.cshtml</small>
+        <hr>
+        <h4>Triplicar / Dividir</h4>
+        <form class="mb-3">
+            <div class="mb-2">
+                <label>Ingrese un número</label><br>
+                <input type="number" class="form-control w-25" />
+            </div>
+            <input type="submit" value="Generar" class="btn btn-primary btn-sm" />
+        </form>
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>NÚMERO</th>
+                <th>MENOR A 50</th>
+                <th>MAYOR O IGUAL A 50</th>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>30</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>60</td>
+                <td></td>
+                <td>15</td>
+            </tr>
+            <tr>
+                <td>20</td>
+                <td>60</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>80</td>
+                <td></td>
+                <td>20</td>
+            </tr>
+        </table>
+    </div>
+
+    <footer class="text-center text-muted mt-2">
+        &copy; 2026 - PW_Ejercicios | nacho · seba · janvera
+    </footer>
+
+</body>
+</html>
