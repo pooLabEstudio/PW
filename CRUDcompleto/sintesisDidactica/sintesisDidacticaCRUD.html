@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe CRUD MVC - Modo Oscuro</title>
+    <style>
+        /* ========== DARK MODE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0c10;
+            color: #e4e6eb;
+            font-family: 'Segoe UI', 'Roboto', 'Consolas', monospace;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #111316;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Tipografía */
+        h1, h2, h3, h4 {
+            color: #bb86fc;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #2a2e3a;
+            padding-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #bb86fc;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+        }
+
+        /* Código */
+        code {
+            background-color: #1e1f29;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+
+        pre {
+            background-color: #1a1c24;
+            padding: 1rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            border-left: 4px solid #bb86fc;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85rem;
+        }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background-color: #14161e;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #2a2e3a;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1e1f2c;
+            color: #bb86fc;
+            font-weight: 600;
+        }
+
+        td {
+            background-color: #111316;
+        }
+
+        /* Listas */
+        ul, ol {
+            margin-left: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Mermaid diagramas (textual) */
+        .mermaid-placeholder {
+            background-color: #1a1c24;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border: 1px solid #2a2e3a;
+            color: #c9d1d9;
+        }
+
+        /* Tarjetas */
+        .card {
+            background-color: #14161e;
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            border: 1px solid #2a2e3a;
+        }
+
+        .badge {
+            background-color: #2a2e3a;
+            color: #bb86fc;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #2a2e3a;
+            margin: 2rem 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2a2e3a;
+            font-size: 0.8rem;
+            color: #8b8f9e;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Impresión para PDF */
+        @media print {
+            body {
+                background-color: #0a0c10;
+                color: #e4e6eb;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .container {
+                background-color: #111316;
+                box-shadow: none;
+            }
+            pre, .card, .mermaid-placeholder {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📘 Informe Técnico-Didáctico</h1>
+    <h2 style="text-align:center; border-bottom: none;">CRUD en ASP.NET Core MVC con C#</h2>
+    <h2 style="text-align:center; font-size:1rem; color:#8b8f9e;">Modo oscuro · Alivio visual</h2>
+    
+    <hr>
+
+    <!-- ==================== ÍNDICE ==================== -->
+    <h2>📑 Índice</h2>
+    <ul>
+        <li>1. <a href="#intro" style="color:#bb86fc;">Introducción al Patrón MVC</a></li>
+        <li>2. <a href="#estructura" style="color:#bb86fc;">Estructura del Proyecto</a></li>
+        <li>3. <a href="#modelo" style="color:#bb86fc;">Modelo: La Clase Datos</a></li>
+        <li>4. <a href="#vistas" style="color:#bb86fc;">Vistas: La Capa de Presentación</a></li>
+        <li>5. <a href="#controlador" style="color:#bb86fc;">Controlador: La Lógica de Negocio</a></li>
+        <li>6. <a href="#flujo" style="color:#bb86fc;">Flujo Completo del CRUD</a></li>
+        <li>7. <a href="#analisis" style="color:#bb86fc;">Análisis de Funcionamiento</a></li>
+        <li>8. <a href="#mejoras" style="color:#bb86fc;">Buenas Prácticas y Mejoras</a></li>
+        <li>9. <a href="#resumen" style="color:#bb86fc;">Resumen Visual</a></li>
+        <li>10. <a href="#conclusion" style="color:#bb86fc;">Conclusión</a></li>
+    </ul>
+
+    <!-- ==================== 1. INTRODUCCIÓN ==================== -->
+    <h2 id="intro">1. Introducción al Patrón MVC</h2>
+    <p><span class="badge">🔰 FUNDAMENTAL</span> <strong>MVC (Model-View-Controller)</strong> es un patrón de arquitectura de software que separa una aplicación en tres componentes principales:</p>
+    <div class="mermaid-placeholder">
+        ┌─────────────────────────────────────────────────────────┐
+        │                       MVC                                │
+        ├─────────────────────────────────────────────────────────┤
+        │  MODELO     │   VISTA     │   CONTROLADOR              │
+        │  (Datos)    │ (Interfaz)  │   (Lógica)                 │
+        ├─────────────┼─────────────┼─────────────────────────────┤
+        │  • Datos    │ • HTML      │ • Recibe peticiones         │
+        │  • Reglas   │ • CSS       │ • Procesa datos             │
+        │  • Lógica   │ • JavaScript│ • Coordina M y V            │
+        │    negocio  │             │                             │
+        └─────────────┴─────────────┴─────────────────────────────┘
+    </div>
+    <div class="card">
+        <strong>✅ Beneficios del Patrón MVC</strong>
+        <ul>
+            <li><strong>Separación de responsabilidades</strong> – Cada componente tiene una función específica.</li>
+            <li><strong>Mantenibilidad</strong> – Facilita modificaciones sin afectar otras partes.</li>
+            <li><strong>Reutilización</strong> – Los componentes pueden reutilizarse.</li>
+            <li><strong>Escalabilidad</strong> – Permite crecimiento ordenado de la aplicación.</li>
+        </ul>
+    </div>
+
+    <!-- ==================== 2. ESTRUCTURA ==================== -->
+    <h2 id="estructura">2. Estructura del Proyecto</h2>
+    <pre><code>EjercicioCompleto/
+│
+├── Models/
+│   └── Datos.cs                 # MODELO: Define la estructura de datos
+│
+├── Views/
+│   ├── Home/
+│   │   ├── Index.cshtml         # VISTA: Login/Inicio de sesión
+│   │   ├── Agregar.cshtml       # VISTA: Listado y creación de usuarios
+│   │   ├── Editar.cshtml        # VISTA: Formulario de edición
+│   │   └── Eliminar.cshtml      # VISTA: Confirmación de eliminación
+│   └── Shared/
+│       └── _Layout.cshtml       # VISTA: Plantilla común
+│
+└── Controllers/
+    └── HomeController.cs        # CONTROLADOR: Lógica de la aplicación</code></pre>
+
+    <!-- ==================== 3. MODELO ==================== -->
+    <h2 id="modelo">3. Modelo: La Clase Datos</h2>
+    <pre><code>namespace EjercicioCompleto.Models
+{
+    public class Datos
+    {
+        public string? usuario_ { get; set; }      // Nombre de usuario
+        public string? contraseña_ { get; set; }   // Contraseña
+        public string? habilitado_ { get; set; }   // Estado (on/null)
+    }
+}</code></pre>
+    <p><strong>Propiedades explicadas:</strong></p>
+    <table>
+        <thead>
+            <tr><th>Propiedad</th><th>Tipo</th><th>¿Qué almacena?</th><th>¿Por qué string?</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>usuario_</code></td><td><code>string?</code></td><td>Nombre del usuario</td><td>Identificador único</td></tr>
+            <tr><td><code>contraseña_</code></td><td><code>string?</code></td><td>Contraseña del usuario</td><td>Almacena en texto plano (mejorable)</td></tr>
+            <tr><td><code>habilitado_</code></td><td><code>string?</code></td><td>Estado del usuario</td><td>"on" = habilitado, null = deshabilitado</td></tr>
+        </tbody>
+    </table>
+    <div class="card">
+        <strong>💡 Nota:</strong> El checkbox HTML envía <code>"on"</code> cuando está marcado y <code>null</code> cuando no.
+    </div>
+
+    <!-- ==================== 4. VISTAS ==================== -->
+    <h2 id="vistas">4. Vistas: La Capa de Presentación</h2>
+    <h3>📄 _Layout.cshtml (Plantilla común)</h3>
+    <pre><code>&lt;html&gt;
+&lt;head&gt;&lt;title&gt;@ViewData["Title"]&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;&lt;nav&gt;...&lt;/nav&gt;&lt;/header&gt;
+    &lt;main&gt;@RenderBody()&lt;/main&gt;
+    &lt;footer&gt;...&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h3>🔐 Index.cshtml (Login)</h3>
+    <pre><code>&lt;form asp-controller="Home" asp-action="validar" method="post"&gt;
+    &lt;input type="text" name="txtUsuario" /&gt;
+    &lt;input type="password" name="txtContraseña" /&gt;
+    &lt;input type="submit" value="Ingresar" /&gt;
+&lt;/form&gt;
+&lt;h1&gt;@ViewBag.respuesta&lt;/h1&gt;</code></pre>
+
+    <h3>📋 Agregar.cshtml (Listado + Creación)</h3>
+    <p>Combina un formulario para añadir usuarios y una tabla que muestra todos los registros con botones Editar/Eliminar.</p>
+    <pre><code>&lt;table&gt;
+    @foreach (var usuarios in ViewBag.respuesta)
+    {
+        &lt;tr&gt;
+            &lt;td&gt;@usuarios.usuario_&lt;/td&gt;
+            &lt;td&gt;@usuarios.contraseña_&lt;/td&gt;
+            &lt;td&gt;@(usuarios.habilitado_ == "on" ? "HABILITADO" : "DESHABILITADO")&lt;/td&gt;
+            &lt;td&gt;
+                &lt;form asp-action="Editar" method="post"&gt;
+                    &lt;input type="hidden" name="txtEditarUsuario" value="@usuarios.usuario_" /&gt;
+                    &lt;input type="submit" value="Editar" /&gt;
+                &lt;/form&gt;
+            &lt;/td&gt;
+            &lt;td&gt;
+                &lt;form asp-action="Eliminar" method="post"&gt;
+                    &lt;input type="hidden" name="txtUsuarioEliminar" value="@usuarios.usuario_" /&gt;
+                    &lt;input type="submit" value="Eliminar" /&gt;
+                &lt;/form&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    }
+&lt;/table&gt;</code></pre>
+
+    <h3>✏️ Editar.cshtml</h3>
+    <p>Campo de usuario readonly (identificador), contraseña editable y checkbox para estado.</p>
+    <pre><code>&lt;input type="text" name="txtUsuarioNuevo" value="@ViewBag.UsuarioEditado" readonly /&gt;
+&lt;input type="password" name="txtContraseñaNuevo" value="@ViewBag.ContraseñaEditado" /&gt;
+&lt;input type="checkbox" name="chkHabilitadoNuevo" @ViewBag.HabilitadoEditado /&gt;</code></pre>
+
+    <h3>🗑️ Eliminar.cshtml</h3>
+    <p>Confirmación antes de eliminar con dos formularios: Cancelar y Confirmar.</p>
+
+    <!-- ==================== 5. CONTROLADOR ==================== -->
+    <h2 id="controlador">5. Controlador: La Lógica de Negocio</h2>
+    <pre><code>public class HomeController : Controller
+{
+    static List&lt;Datos&gt; listado = new List&lt;Datos&gt;();  // Almacenamiento en memoria
+
+    // Index, validar, Agregar, Nuevo, Editar, EditarDatos, Eliminar, confirmaEliminar, confirmaVolver
+}</code></pre>
+    <div class="card">
+        <strong>⚠️ Importante:</strong> La lista <code>static</code> persiste en memoria mientras la app esté ejecutándose. Al reiniciar el servidor se pierden los datos.
+    </div>
+
+    <h3>🔍 validar() – Autenticación</h3>
+    <pre><code>var traeDatos = listado.Find(l => l.usuario_ == txtUsuario);
+if (traeDatos == null) → "Usuario no existe"
+else if (traeDatos.contraseña_ != txtContraseña) → "Contraseña incorrecta"
+else if (traeDatos.habilitado_ != "on") → "Usuario no habilitado"
+else → "Bienvenido"</code></pre>
+
+    <h3>➕ Nuevo() – Crear usuario</h3>
+    <pre><code>listado.Add(new Datos() { usuario_ = txtUsuarioNuevo, contraseña_ = txtContraseñaNuevo, habilitado_ = chkHabilitado });</code></pre>
+
+    <h3>✏️ EditarDatos() – Actualizar</h3>
+    <pre><code>var editaDatos = listado.Find(l => l.usuario_ == txtUsuarioNuevo);
+editaDatos.contraseña_ = txtContraseñaNuevo;
+editaDatos.habilitado_ = chkHabilitadoNuevo;</code></pre>
+
+    <h3>❌ confirmaEliminar() – Eliminar</h3>
+    <pre><code>var eliminaDatos = listado.Find(l => l.usuario_ == txtUsuarioDatoEliminar);
+listado.Remove(eliminaDatos);</code></pre>
+
+    <!-- ==================== 6. FLUJO CRUD ==================== -->
+    <h2 id="flujo">6. Flujo Completo del CRUD</h2>
+    <div class="mermaid-placeholder">
+        CREATE (Crear)
+        Usuario → Agregar.cshtml → Nuevo() → listado.Add() → Retorna Agregar con lista actualizada
+
+        READ (Leer)
+        Agregar.cshtml → ViewBag.respuesta (lista) → @foreach muestra todos
+
+        UPDATE (Editar)
+        Click Editar → Editar() (ViewBag con datos) → Editar.cshtml → EditarDatos() → actualiza
+
+        DELETE (Eliminar)
+        Click Eliminar → Eliminar() → Eliminar.cshtml → Confirmar → confirmaEliminar() → Remove
+    </div>
+
+    <!-- ==================== 7. ANÁLISIS ==================== -->
+    <h2 id="analisis">7. Análisis de Funcionamiento</h2>
+    <h3>📦 ViewBag</h3>
+    <p>Objeto dinámico que permite pasar datos del controlador a la vista. Ejemplo: <code>ViewBag.respuesta = listado;</code> y en vista <code>@ViewBag.respuesta</code>.</p>
+    <h3>🎯 Tag Helpers</h3>
+    <p><code>asp-controller</code> y <code>asp-action</code> generan rutas automáticas: <code>/Home/validar</code>.</p>
+    <h3>🕵️ Inputs Hidden</h3>
+    <p>Envían datos al servidor sin mostrarlos (útil para IDs).</p>
+    <h3>⚡ Condicionales en Vista</h3>
+    <p>Operador ternario: <code>@(usuarios.habilitado_ == "on" ? "HABILITADO" : "DESHABILITADO")</code></p>
+
+    <!-- ==================== 8. MEJORAS ==================== -->
+    <h2 id="mejoras">8. Buenas Prácticas y Mejoras</h2>
+    <div class="card">
+        <strong>🔐 Seguridad:</strong> Usar hash de contraseñas (BCrypt).<br>
+        <strong>🗄️ Persistencia:</strong> Reemplazar lista estática por Entity Framework Core con SQL Server/SQLite.<br>
+        <strong>🆔 Identificador:</strong> Usar Id numérico autoincremental en lugar del nombre de usuario.<br>
+        <strong>✅ Validaciones:</strong> DataAnnotations (<code>[Required]</code>, <code>[StringLength]</code>).<br>
+        <strong>⚠️ Excepciones:</strong> Try-catch en operaciones críticas.
+    </div>
+    <h3>Ejemplo de modelo mejorado:</h3>
+    <pre><code>public class Usuario
+{
+    public int Id { get; set; }
+    public string NombreUsuario { get; set; }
+    public string ContraseñaHash { get; set; }
+    public bool EstaHabilitado { get; set; }
+    public DateTime FechaCreacion { get; set; }
+}</code></pre>
+
+    <!-- ==================== 9. RESUMEN VISUAL ==================== -->
+    <h2 id="resumen">9. Resumen Visual del Flujo</h2>
+    <div class="mermaid-placeholder">
+        _Layout.cshtml
+         ├── Inicio sesión → Index.cshtml → validar() → mensaje
+         └── Agregar → Agregar.cshtml
+               ├── Formulario Nuevo → Nuevo() → retorna Agregar
+               ├── Tabla de usuarios
+               │     ├── Editar → Editar.cshtml → EditarDatos() → actualiza
+               │     └── Eliminar → Eliminar.cshtml → confirmaEliminar() → elimina
+               └── (Vuelve siempre a Agregar.cshtml para mostrar lista actualizada)
+    </div>
+
+    <!-- ==================== 10. CONCLUSIÓN ==================== -->
+    <h2 id="conclusion">10. Conclusión</h2>
+    <p>Este proyecto es un ejemplo completo y funcional de un CRUD usando el patrón MVC en ASP.NET Core con C#. Se han implementado las cuatro operaciones fundamentales (Create, Read, Update, Delete) utilizando una lista en memoria como almacenamiento temporal, y se ha logrado una separación clara entre la lógica de negocio (controlador), la presentación (vistas) y los datos (modelo).</p>
+    <p><strong>✅ Fortalezas:</strong> Estructura MVC clara, CRUD completo, uso de ViewBag, formularios con Tag Helpers, navegación coherente.</p>
+    <p><strong>🔧 Áreas de oportunidad:</strong> Migrar a base de datos real, implementar hash de contraseñas, agregar validaciones robustas, manejo de errores y repositorios para escalabilidad.</p>
+    
+    <hr>
+    <footer>
+        📘 Informe generado con estilo Dark Mode para aliviar la vista.<br>
+        Tecnología: ASP.NET Core MVC · C# · Razor Views<br>
+        Propósito: Educación y comprensión del patrón MVC en aplicaciones CRUD.
+    </footer>
+</div>
+</body>
+</html>

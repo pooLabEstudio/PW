@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Completo CRUD MVC - Modo Oscuro</title>
+    <style>
+        /* ========== DARK MODE GLOBAL ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0c10;
+            color: #e4e6eb;
+            font-family: 'Segoe UI', 'Roboto', 'Consolas', monospace;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background-color: #111316;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        h1, h2, h3, h4 {
+            color: #bb86fc;
+            margin-top: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #2a2e3a;
+            padding-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            border-bottom: 2px solid #bb86fc;
+        }
+
+        h2 { font-size: 1.7rem; }
+        h3 { font-size: 1.4rem; }
+        h4 { font-size: 1.2rem; border-bottom: none; }
+
+        code {
+            background-color: #1e1f29;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+
+        pre {
+            background-color: #1a1c24;
+            padding: 1rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            border-left: 4px solid #bb86fc;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background-color: #14161e;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #2a2e3a;
+            padding: 0.75rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #1e1f2c;
+            color: #bb86fc;
+            font-weight: 600;
+        }
+
+        td {
+            background-color: #111316;
+        }
+
+        ul, ol {
+            margin-left: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        .card {
+            background-color: #14161e;
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            border: 1px solid #2a2e3a;
+        }
+
+        .badge {
+            background-color: #2a2e3a;
+            color: #bb86fc;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        /* Simulación de pantallas (mockups) */
+        .screen-mock {
+            background-color: #0f1117;
+            border-radius: 16px;
+            border: 1px solid #2a2e3a;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .screen-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8b8f9e;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid #2a2e3a;
+            display: inline-block;
+        }
+
+        .mock-nav {
+            display: flex;
+            gap: 1.5rem;
+            background-color: #1a1c24;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .mock-nav span:first-child { color: #bb86fc; font-weight: bold; }
+        .mock-nav span:last-child { color: #e06c75; }
+
+        .mock-form {
+            background-color: #14161e;
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        .mock-row {
+            display: flex;
+            margin-bottom: 0.8rem;
+            align-items: center;
+            gap: 1rem;
+        }
+        .mock-label { width: 130px; color: #bb86fc; }
+        .mock-input {
+            background-color: #1e1f29;
+            border: 1px solid #2a2e3a;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            color: #e4e6eb;
+            font-family: monospace;
+        }
+        .mock-checkbox {
+            width: 18px;
+            height: 18px;
+            background-color: #1e1f29;
+            border: 1px solid #bb86fc;
+            display: inline-block;
+            border-radius: 3px;
+        }
+        .mock-table {
+            width: 100%;
+            font-size: 0.85rem;
+            border-collapse: collapse;
+        }
+        .mock-table th, .mock-table td {
+            border: 1px solid #2a2e3a;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .mock-btn {
+            background-color: #2a2e3a;
+            border: none;
+            padding: 0.2rem 0.8rem;
+            border-radius: 8px;
+            color: #e4e6eb;
+            cursor: default;
+            font-size: 0.8rem;
+        }
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #2a2e3a;
+            margin: 2rem 0;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2a2e3a;
+            font-size: 0.8rem;
+            color: #8b8f9e;
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .container { padding: 1rem; }
+            .mock-row { flex-direction: column; align-items: flex-start; }
+        }
+        @media print {
+            body { background-color: #0a0c10; color: #e4e6eb; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .container { background-color: #111316; }
+            .screen-mock, pre, .card { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📘 INFORME COMPLETO: CRUD EN ASP.NET CORE MVC</h1>
+    <p style="text-align:center; color:#8b8f9e;">Modelo-Vista-Controlador | C# | Razor Views | Almacenamiento en memoria</p>
+
+    <!-- ==================== ÍNDICE ==================== -->
+    <h2>📑 Índice de Contenido</h2>
+    <ul>
+        <li><a href="#intro" style="color:#bb86fc;">1. Introducción al Patrón MVC</a></li>
+        <li><a href="#estructura" style="color:#bb86fc;">2. Estructura del Proyecto</a></li>
+        <li><a href="#modelo" style="color:#bb86fc;">3. Modelo: Clase Datos (código completo)</a></li>
+        <li><a href="#vistas" style="color:#bb86fc;">4. Vistas completas: Index, Agregar, Editar, Eliminar, Layout</a></li>
+        <li><a href="#controlador" style="color:#bb86fc;">5. Controlador HomeController (código íntegro)</a></li>
+        <li><a href="#pantallas" style="color:#bb86fc;">6. Representación de Pantallas (imágenes simuladas)</a></li>
+        <li><a href="#flujo" style="color:#bb86fc;">7. Flujo CRUD paso a paso</a></li>
+        <li><a href="#analisis" style="color:#bb86fc;">8. Análisis técnico y funcionamiento</a></li>
+        <li><a href="#mejoras" style="color:#bb86fc;">9. Buenas prácticas y mejoras sugeridas</a></li>
+        <li><a href="#conclusion" style="color:#bb86fc;">10. Conclusión</a></li>
+    </ul>
+
+    <!-- ========== 1. INTRO ========== -->
+    <h2 id="intro">1. Introducción al Patrón MVC</h2>
+    <div class="card">
+        <p><span class="badge">🎯 ARQUITECTURA</span> <strong>MVC (Model-View-Controller)</strong> separa la aplicación en tres capas:</p>
+        <ul>
+            <li><strong>Modelo</strong>: Datos y lógica de negocio (clase <code>Datos</code>).</li>
+            <li><strong>Vista</strong>: Interfaz de usuario (archivos .cshtml con HTML/Razor).</li>
+            <li><strong>Controlador</strong>: Gestiona peticiones, interactúa con el modelo y selecciona la vista.</li>
+        </ul>
+        <p>✅ Beneficios: mantenibilidad, reutilización, escalabilidad y separación de responsabilidades.</p>
+    </div>
+
+    <!-- ========== 2. ESTRUCTURA ========== -->
+    <h2 id="estructura">2. Estructura del Proyecto</h2>
+    <pre><code>EjercicioCompleto/
+├── Models/
+│   └── Datos.cs                     # Modelo
+├── Views/
+│   ├── Home/
+│   │   ├── Index.cshtml             # Login
+│   │   ├── Agregar.cshtml           # Listado + formulario alta
+│   │   ├── Editar.cshtml            # Edición
+│   │   └── Eliminar.cshtml          # Confirmación borrado
+│   └── Shared/
+│       └── _Layout.cshtml           # Plantilla común
+└── Controllers/
+    └── HomeController.cs            # Controlador principal</code></pre>
+
+    <!-- ========== 3. MODELO COMPLETO ========== -->
+    <h2 id="modelo">3. Modelo: Clase Datos (código completo)</h2>
+    <pre><code>// Datos.cs
+namespace EjercicioCompleto.Models
+{
+    public class Datos
+    {
+        public string? usuario_ { get; set; }      // Nombre de usuario (identificador)
+        public string? contraseña_ { get; set; }   // Contraseña en texto plano
+        public string? habilitado_ { get; set; }   // "on" = habilitado, null = deshabilitado
+    }
+}</code></pre>
+    <p><strong>Nota:</strong> El checkbox envía <code>"on"</code> al servidor cuando está marcado, de lo contrario <code>null</code>.</p>
+
+    <!-- ========== 4. VISTAS COMPLETAS ========== -->
+    <h2 id="vistas">4. Vistas completas (código fuente íntegro)</h2>
+
+    <h3>📄 _Layout.cshtml (Plantilla principal)</h3>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+    &lt;title&gt;@ViewData["Title"] - EjercicioCompleto&lt;/title&gt;
+    &lt;link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;
+        &lt;nav&gt;
+            &lt;a asp-area="" asp-controller="Home" asp-action="Index"&gt;Inicio sesión&lt;/a&gt;
+            &lt;a asp-controller="Home" asp-action="Agregar"&gt;Agregar&lt;/a&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+    &lt;div class="container"&gt;
+        &lt;main&gt;@RenderBody()&lt;/main&gt;
+    &lt;/div&gt;
+    &lt;footer&gt;&amp;copy; 2026 - EjercicioCompleto&lt;/footer&gt;
+    @await RenderSectionAsync("Scripts", required: false)
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h3>🔐 Index.cshtml (Inicio de sesión)</h3>
+    <pre><code>@{
+    ViewData["Title"] = "Inicio sesión";
+}
+&lt;form asp-controller="Home" asp-action="validar" method="post"&gt;
+    &lt;div&gt;
+        &lt;label&gt;Usuario&lt;/label&gt;
+        &lt;input type="text" name="txtUsuario" /&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label&gt;Contraseña&lt;/label&gt;
+        &lt;input type="password" name="txtContraseña" /&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;input type="submit" value="Ingresar" /&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
+&lt;h1 style="color:red;"&gt;@ViewBag.respuesta&lt;/h1&gt;</code></pre>
+
+    <h3>📋 Agregar.cshtml (Listado + creación)</h3>
+    <pre><code>@{
+    ViewData["Title"] = "Agregar";
+}
+&lt;h1&gt;Agregar&lt;/h1&gt;
+&lt;form asp-controller="Home" asp-action="Nuevo" method="post"&gt;
+    &lt;input type="text" name="txtUsuarioNuevo" placeholder="Usuario" /&gt;
+    &lt;input type="password" name="txtContraseñaNuevo" placeholder="Contraseña" /&gt;
+    &lt;label&gt;Habilitado&lt;/label&gt;
+    &lt;input type="checkbox" name="chkHabilitado" /&gt;
+    &lt;input type="submit" value="Añadir" /&gt;
+&lt;/form&gt;
+
+&lt;table border="1"&gt;
+    &lt;tr&gt;&lt;th&gt;USUARIO&lt;/th&gt;&lt;th&gt;CONTRASEÑA&lt;/th&gt;&lt;th&gt;ESTADO&lt;/th&gt;&lt;th&gt;EDITAR&lt;/th&gt;&lt;th&gt;ELIMINAR&lt;/th&gt;&lt;/tr&gt;
+    @foreach (var usuarios in ViewBag.respuesta)
+    {
+        &lt;tr&gt;
+            &lt;td&gt;@usuarios.usuario_&lt;/td&gt;
+            &lt;td&gt;@usuarios.contraseña_&lt;/td&gt;
+            &lt;td&gt;@(usuarios.habilitado_ == "on" ? "HABILITADO" : "DESHABILITADO")&lt;/td&gt;
+            &lt;td&gt;
+                &lt;form asp-action="Editar" method="post"&gt;
+                    &lt;input type="hidden" name="txtEditarUsuario" value="@usuarios.usuario_" /&gt;
+                    &lt;input type="hidden" name="txtEditarContraseña" value="@usuarios.contraseña_" /&gt;
+                    &lt;input type="hidden" name="chkEditarHabilitado" value="@usuarios.habilitado_" /&gt;
+                    &lt;input type="submit" value="Editar" /&gt;
+                &lt;/form&gt;
+            &lt;/td&gt;
+            &lt;td&gt;
+                &lt;form asp-action="Eliminar" method="post"&gt;
+                    &lt;input type="hidden" name="txtUsuarioEliminar" value="@usuarios.usuario_" /&gt;
+                    &lt;input type="submit" value="Eliminar" /&gt;
+                &lt;/form&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    }
+&lt;/table&gt;</code></pre>
+
+    <h3>✏️ Editar.cshtml</h3>
+    <pre><code>@{
+    ViewData["Title"] = "Editar";
+}
+&lt;h1&gt;Editar&lt;/h1&gt;
+&lt;form asp-controller="Home" asp-action="EditarDatos" method="post"&gt;
+    &lt;label&gt;Usuario (no editable)&lt;/label&gt;
+    &lt;input type="text" name="txtUsuarioNuevo" value="@ViewBag.UsuarioEditado" readonly /&gt;
+    
+    &lt;label&gt;Contraseña&lt;/label&gt;
+    &lt;input type="password" name="txtContraseñaNuevo" value="@ViewBag.ContraseñaEditado" /&gt;
+    
+    &lt;label&gt;Habilitado&lt;/label&gt;
+    &lt;input type="checkbox" name="chkHabilitadoNuevo" @ViewBag.HabilitadoEditado /&gt;
+    
+    &lt;input type="submit" value="Editar registro" /&gt;
+&lt;/form&gt;</code></pre>
+
+    <h3>🗑️ Eliminar.cshtml</h3>
+    <pre><code>@{
+    ViewData["Title"] = "Eliminar";
+}
+&lt;h1&gt;Eliminar&lt;/h1&gt;
+&lt;h3 style="color:red;"&gt;¿Realmente desea eliminar al usuario @ViewBag.datoUsuario?&lt;/h3&gt;
+&lt;div&gt;
+    &lt;form asp-action="confirmaVolver"&gt;
+        &lt;input type="submit" value="Cancelar" /&gt;
+    &lt;/form&gt;
+    &lt;form asp-action="confirmaEliminar"&gt;
+        &lt;input type="hidden" name="txtUsuarioDatoEliminar" value="@ViewBag.datoUsuario" /&gt;
+        &lt;input type="submit" value="Confirmar" /&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</code></pre>
+
+    <!-- ========== 5. CONTROLADOR COMPLETO ========== -->
+    <h2 id="controlador">5. Controlador HomeController (código íntegro)</h2>
+    <pre><code>using EjercicioCompleto.Models;
+using Microsoft.AspNetCore.Mvc;
+
+namespace EjercicioCompleto.Controllers
+{
+    public class HomeController : Controller
+    {
+        static List&lt;Datos&gt; listado = new List&lt;Datos&gt;();
+
+        public IActionResult Index() => View();
+
+        public IActionResult validar(string txtUsuario, string txtContraseña)
+        {
+            if (txtUsuario != null && txtContraseña != null)
+            {
+                var traeDatos = listado.Find(l => l.usuario_ == txtUsuario);
+                if (traeDatos == null)
+                    ViewBag.respuesta = "Usuario ingresado no existe en el sistema";
+                else if (traeDatos.contraseña_ != txtContraseña)
+                    ViewBag.respuesta = "Contraseña incorrecta";
+                else if (traeDatos.habilitado_ != "on")
+                    ViewBag.respuesta = "Usuario no se encuentra HABILITADO";
+                else
+                    ViewBag.respuesta = "Bienvenido usuario: " + txtUsuario;
+            }
+            else
+                ViewBag.respuesta = "usuario vacio";
+
+            return View("Index");
+        }
+
+        public IActionResult Agregar()
+        {
+            ViewBag.respuesta = listado;
+            return View();
+        }
+
+        public IActionResult Nuevo(string txtUsuarioNuevo, string txtContraseñaNuevo, string chkHabilitado)
+        {
+            listado.Add(new Datos()
+            {
+                usuario_ = txtUsuarioNuevo,
+                contraseña_ = txtContraseñaNuevo,
+                habilitado_ = chkHabilitado
+            });
+            ViewBag.respuesta = listado;
+            return View("Agregar");
+        }
+
+        public IActionResult Editar(string txtEditarUsuario, string txtEditarContraseña, string chkEditarHabilitado)
+        {
+            ViewBag.UsuarioEditado = txtEditarUsuario;
+            ViewBag.ContraseñaEditado = txtEditarContraseña;
+            ViewBag.HabilitadoEditado = (chkEditarHabilitado == "on") ? "checked" : "";
+            return View();
+        }
+
+        public IActionResult EditarDatos(string txtUsuarioNuevo, string txtContraseñaNuevo, string chkHabilitadoNuevo)
+        {
+            var editaDatos = listado.Find(l => l.usuario_ == txtUsuarioNuevo);
+            if (editaDatos != null)
+            {
+                editaDatos.contraseña_ = txtContraseñaNuevo;
+                editaDatos.habilitado_ = chkHabilitadoNuevo;
+            }
+            ViewBag.respuesta = listado;
+            return View("Agregar");
+        }
+
+        public IActionResult Eliminar(string txtUsuarioEliminar)
+        {
+            ViewBag.datoUsuario = txtUsuarioEliminar;
+            return View();
+        }
+
+        public IActionResult confirmaVolver()
+        {
+            ViewBag.respuesta = listado;
+            return View("Agregar");
+        }
+
+        public IActionResult confirmaEliminar(string txtUsuarioDatoEliminar)
+        {
+            var eliminaDatos = listado.Find(l => l.usuario_ == txtUsuarioDatoEliminar);
+            if (eliminaDatos != null)
+                listado.Remove(eliminaDatos);
+            ViewBag.respuesta = listado;
+            return View("Agregar");
+        }
+    }
+}</code></pre>
+
+    <!-- ========== 6. PANTALLAS SIMULADAS (IMÁGENES) ========== -->
+    <h2 id="pantallas">6. Representación visual de las pantallas (simulando imágenes 1.png al 9.png)</h2>
+    <p>Basado en las capturas originales del proyecto.</p>
+
+    <!-- Pantalla 1: Index vacío -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 1: Index (Login vacío)</div>
+        <div class="mock-nav"><span>EjercicioCompleto</span> <span>Inicio sesión</span> <span>Agregar</span></div>
+        <div class="mock-form">
+            <div class="mock-row"><div class="mock-label">Usuario</div><div class="mock-input">[campo vacío]</div></div>
+            <div class="mock-row"><div class="mock-label">Contraseña</div><div class="mock-input">[campo vacío]</div></div>
+            <div class="mock-row"><button class="mock-btn">Ingresar</button></div>
+        </div>
+    </div>
+
+    <!-- Pantalla 2: Agregar vacío -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 2: Agregar sin usuarios</div>
+        <div class="mock-nav"><span>EjercicioCompleto</span> <span>Inicio sesión</span> <span>Agregar</span></div>
+        <div class="mock-form">
+            <div class="mock-row"><div class="mock-label">Añadir Usuario</div><div class="mock-input">[ ]</div></div>
+            <div class="mock-row"><div class="mock-label">Añadir Contraseña</div><div class="mock-input">[ ]</div></div>
+            <div class="mock-row"><div class="mock-label">Habilitado</div><div class="mock-checkbox"></div></div>
+            <button class="mock-btn">Añadir</button>
+        </div>
+        <table class="mock-table">
+            <tr><th>USUARIO</th><th>CONTRASEÑA</th><th>ESTADO</th><th>EDITAR</th><th>ELIMINAR</th></tr>
+            <tr><td colspan="5">No hay usuarios</td></tr>
+        </table>
+    </div>
+
+    <!-- Pantalla 3: Agregar con datos (a,b,c) -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 3: Agregar con usuarios (a,b,c)</div>
+        <table class="mock-table">
+            <tr><th>USUARIO</th><th>CONTRASEÑA</th><th>ESTADO</th><th>EDITAR</th><th>ELIMINAR</th></tr>
+            <tr><td>a</td><td>a</td><td>DESHABILITADO</td><td><button class="mock-btn">Editar</button></td><td><button class="mock-btn">Eliminar</button></td></tr>
+            <tr><td>b</td><td>b</td><td>HABILITADO</td><td><button class="mock-btn">Editar</button></td><td><button class="mock-btn">Eliminar</button></td></tr>
+            <tr><td>c</td><td>c</td><td>DESHABILITADO</td><td><button class="mock-btn">Editar</button></td><td><button class="mock-btn">Eliminar</button></td></tr>
+        </table>
+    </div>
+
+    <!-- Pantalla 4: Editar usuario -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 4: Editar (usuario b)</div>
+        <div class="mock-form">
+            <div class="mock-row"><div class="mock-label">Usuario</div><div class="mock-input">b (readonly)</div></div>
+            <div class="mock-row"><div class="mock-label">Contraseña</div><div class="mock-input">b</div></div>
+            <div class="mock-row"><div class="mock-label">Habilitado</div><div class="mock-checkbox" style="background-color:#bb86fc;"></div></div>
+            <button class="mock-btn">Editar registro</button>
+        </div>
+    </div>
+
+    <!-- Pantalla 5: Agregar después de editar (b habilitado) -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 5: Usuario b ahora HABILITADO</div>
+        <table class="mock-table">
+            <tr><th>USUARIO</th><th>CONTRASEÑA</th><th>ESTADO</th></tr>
+            <tr><td>a</td><td>a</td><td>DESHABILITADO</td></tr>
+            <tr><td>b</td><td>b</td><td>HABILITADO</td></tr>
+            <tr><td>c</td><td>c</td><td>DESHABILITADO</td></tr>
+        </table>
+    </div>
+
+    <!-- Pantalla 6: Eliminar confirmación -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 6: Eliminar (confirmación usuario c)</div>
+        <p style="color:#f07178;">¿Realmente desea eliminar al usuario c?</p>
+        <div style="display:flex; gap:1rem;"><button class="mock-btn">Cancelar</button><button class="mock-btn">Confirmar</button></div>
+    </div>
+
+    <!-- Pantalla 7: Agregar después de eliminar c -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 7: Lista tras eliminar c</div>
+        <table class="mock-table">
+            <tr><th>USUARIO</th><th>CONTRASEÑA</th><th>ESTADO</th></tr>
+            <tr><td>a</td><td>a</td><td>DESHABILITADO</td></tr>
+            <tr><td>b</td><td>b</td><td>HABILITADO</td></tr>
+        </table>
+    </div>
+
+    <!-- Pantalla 8: Login con usuario no habilitado -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 8: Intento login usuario a (DESHABILITADO)</div>
+        <div class="mock-form">
+            <div class="mock-row"><div class="mock-label">Usuario</div><div class="mock-input">a</div></div>
+            <div class="mock-row"><div class="mock-label">Contraseña</div><div class="mock-input">a</div></div>
+            <button class="mock-btn">Ingresar</button>
+        </div>
+        <p style="color:#f07178;">Usuario no se encuentra HABILITADO</p>
+    </div>
+
+    <!-- Pantalla 9: Login exitoso con usuario b -->
+    <div class="screen-mock">
+        <div class="screen-title">📸 Pantalla 9: Login exitoso usuario b</div>
+        <div class="mock-form">
+            <div class="mock-row"><div class="mock-label">Usuario</div><div class="mock-input">b</div></div>
+            <div class="mock-row"><div class="mock-label">Contraseña</div><div class="mock-input">b</div></div>
+            <button class="mock-btn">Ingresar</button>
+        </div>
+        <p style="color:#8bc34a;">Bienvenido usuario: b</p>
+    </div>
+
+    <!-- ========== 7. FLUJO CRUD ========== -->
+    <h2 id="flujo">7. Flujo CRUD paso a paso</h2>
+    <div class="card">
+        <ul>
+            <li><strong>CREATE</strong>: Formulario Agregar → POST /Home/Nuevo → listado.Add() → redirige a Agregar.</li>
+            <li><strong>READ</strong>: Vista Agregar recibe listado en ViewBag.respuesta y lo muestra en tabla.</li>
+            <li><strong>UPDATE</strong>: Botón Editar envía datos ocultos → Editar.cshtml → EditarDatos() modifica.</li>
+            <li><strong>DELETE</strong>: Botón Eliminar → Eliminar.cshtml confirmación → confirmaEliminar() remueve.</li>
+        </ul>
+    </div>
+
+    <!-- ========== 8. ANÁLISIS ========== -->
+    <h2 id="analisis">8. Análisis técnico y funcionamiento</h2>
+    <p><span class="badge">🔍 CLAVE</span> <strong>ViewBag</strong>: objeto dinámico para pasar datos entre controlador y vista. <strong>Inputs hidden</strong>: mantienen el identificador (usuario) en edición/eliminación. <strong>Checkbox</strong>: mapea a string "on"/null. <strong>Lista estática</strong>: los datos persisten solo en memoria mientras la app está activa.</p>
+
+    <!-- ========== 9. MEJORAS ========== -->
+    <h2 id="mejoras">9. Buenas prácticas y mejoras sugeridas</h2>
+    <div class="card">
+        <ul>
+            <li>✅ <strong>Seguridad:</strong> Hash de contraseñas con BCrypt.</li>
+            <li>✅ <strong>Persistencia:</strong> Reemplazar lista estática por Entity Framework + SQL Server.</li>
+            <li>✅ <strong>Identificador:</strong> Usar Id autoincremental en lugar del nombre de usuario.</li>
+            <li>✅ <strong>Validaciones:</strong> DataAnnotations (<code>[Required]</code>, <code>[StringLength]</code>).</li>
+            <li>✅ <strong>Manejo de errores:</strong> Try-catch y mensajes amigables.</li>
+        </ul>
+    </div>
+
+    <!-- ========== 10. CONCLUSIÓN ========== -->
+    <h2 id="conclusion">10. Conclusión</h2>
+    <p>Este informe ha presentado el código completo y el diseño de pantallas de una aplicación CRUD funcional bajo el patrón MVC en ASP.NET Core. Se incluyen todas las vistas, el controlador con la lógica de negocio y el modelo de datos. Además, se han representado visualmente las 9 pantallas que muestran el flujo desde el login hasta la administración de usuarios. Es una base sólida para entender MVC y puede extenderse fácilmente con buenas prácticas de seguridad y persistencia real.</p>
+
+    <hr>
+    <footer>
+        📘 Informe completo con código fuente íntegro y simulación de pantallas.<br>
+        Modo oscuro para aliviar la vista | Generado para documentación educativa.
+    </footer>
+</div>
+</body>
+</html>

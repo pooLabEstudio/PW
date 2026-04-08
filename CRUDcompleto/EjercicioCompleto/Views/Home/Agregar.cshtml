@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Agregar";
+}
+
+<h1>Agregar</h1>
+
+<br />
+<form asp-controller="Home" asp-action="Nuevo" method="post">
+    @* asp conttoler es "Home" asp action es funcion "Nuevo" con method es "post" *@
+    <div style="width: 50%;margin: 0 auto;">
+        @* tabla para añadir*@
+        <table>
+            @* fila para añadir nuevo usuario *@
+            <tr>
+                @* INGRESO DE NUEVO USUARIO txtUsuarioNuevo,txtContraseñaNuev,chkHabilitadoo  *@
+                <td style="width:40%"><label>Añadir Usuario</label></td>
+                <td><input type="text" name="txtUsuarioNuevo" /></td>
+            </tr>
+            @* fila para añadir nuevo contraseña *@
+            <tr>
+                <td style="width:40%"><label>Añadir Contraseña</label></td>
+                <td><input type="password" name="txtContraseñaNuevo" /></td>
+            </tr>
+            @* fila para añadir nuevo habilitado *@
+            <tr>
+                <td style="width:40%"><label>Habilitado</label></td>
+                <td><input type="checkbox" name="chkHabilitado" /></td>
+            </tr>
+            @* fila para añadir con el boton *@
+            <tr>
+                <td colspan="2" style="text-align:right"><input type="submit" value="Añadir" /></td>
+            </tr>
+        </table>
+    </div>
+</form>
+<br />
+@* tabla de los registros ingresados para crud *@
+<div style="width: 100%;margin: 0 auto;">
+    <table border="1" width="100%">
+        @* titulos columnas *@
+        <tr>
+            <td style="background:red; color:white; width:20%">USUARIO</td>
+            <td style="background:red; color:white; width:30%">CONTRASEÑA</td>
+            <td style="background:red; color:white; width:30%">ESTADO</td>
+            <td style="background:red; color:white; width:10%">EDITAR</td>
+            <td style="background:red; color:white; width:10%">ELIMINAR</td>
+        </tr>
+        @* en base a viewbag.respuesta se muestra los registros ingresados para crud *@
+        @{
+            if (ViewBag.respuesta != null)
+            {
+                //agrega a la tabla los registros ingresados para crud
+                foreach (var usuarios in ViewBag.respuesta)
+                {
+                    <tr>
+                        <td>@usuarios.usuario_</td>
+                        <td>@usuarios.contraseña_</td>
+                        <td>
+                            @{
+                                if (usuarios.habilitado_ == "on")
+                                {
+                                    <label>HABILITADO</label>
+                                }
+                                else
+                                {
+                                    <label>DESHABILITADO</label>
+                                }
+                            }
+                        </td>
+                        @* para accion del boton Editar del registro seleccionado *@
+                        <td>
+                            <form asp-action="Editar" method="post">
+                                <input type="hidden" name="txtEditarUsuario" value="@usuarios.usuario_" />
+                                <input type="hidden" name="txtEditarContraseña" value="@usuarios.contraseña_" />
+                                <input type="hidden" name="chkEditarHabilitado" value="@usuarios.habilitado_" />
+                                <input type="submit" value="Editar" />
+                            </form>
+                        </td>
+                        @* para accion del boton Eliminar del registro seleccionado *@
+                        <td>
+                            <form asp-action="Eliminar" method="post">
+                                <input type="hidden" name="txtUsuarioEliminar" value="@usuarios.usuario_" />
+                                <input type="submit" value="Eliminar" />
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </table>
+</div>

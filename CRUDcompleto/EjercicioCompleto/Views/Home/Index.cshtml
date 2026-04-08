@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Inicio sesión";
+}
+
+<br />
+@* formulario de validacion como si fuera un login con usuario y contraseña para validar el acceso  *@
+<form asp-controller="Home" asp-action="validar" method="post">
+    <div style="width: 50%;margin: 0 auto;">
+        @* tabla con 3 filas para nombre pass habilitar *@
+        <table>
+            <tr>
+                @* input txtUsuario *@
+                <td style="width:40%"><label>Usuario</label></td>
+                <td><input type="text" id="txtUsuario" name="txtUsuario" /></td>
+            </tr>
+            <tr>
+                @* input txt contraseña *@
+                <td style="width:40%"><label>Contraseña</label></td>
+                <td><input type="password" id="txtContraseña" name="txtContraseña" /></td>
+            </tr>
+            <tr>
+                @* boton para validar el acceso *@
+                <td colspan="2"><input type="submit" value="Ingresar" /></td>
+            </tr>
+        </table>
+    </div>
+</form>
+<br />
+@* mensaje de respuesta de la validacion con @ViewBag.respuesta *@
+<h1 style="color:red;">@ViewBag.respuesta</h1>
