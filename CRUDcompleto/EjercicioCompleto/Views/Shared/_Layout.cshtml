@@ -1,29 +1,37 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- TITULO EN LA BARRA SUP -->
     <title>@ViewData["Title"] - EjercicioCompleto</title>
     <script type="importmap"></script>
+    <!-- LINKS PARA CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EjercicioCompleto.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
+        <!-- MENU SUPERIOR NAV -->
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
+                <!-- CARGA PANTALLA Index asp-action="Index" -->
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EjercicioCompleto</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <!-- LISTA NO ORDENADA DEL INDICE contiene los elementos del menú. -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
+                            <!-- CARGA PANTALLA x controler asp-action="Index"  Index.cshtml -->
+                            <!-- ejecuta la acción Index dentro del controlador Home, lo cual devuelve la vista Index.cshtml. -->
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio sesión</a>
                         </li>
                         <li class="nav-item">
+                            <!-- CARGA PANTALLA x controler asp-action="Agregar" Agregar.cshtml -->
                             <a class="nav-link text-danger" asp-controller="Home" asp-action="Agregar">Agregar</a>
                         </li>
                     </ul>
