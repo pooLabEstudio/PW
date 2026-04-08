@@ -1,0 +1,125 @@
+Entrega Lunes 6
+nacho.seba.janvera
+PSEUDOCODIGO para guiarnos en desarrollo:
+
+Ejercicio 1
+	Usted se debe estacionar en un parquímetro, el cual tiene la siguiente tarifa: 
+	-	De 0 a 25 minutos = $1850. //por defecto si son 20 min $1850
+	-	El valor del minuto adicional es de $23. 
+	-	Genere un programa que 
+			calcule la cantidad de pesos (CLP) que debe cancelar al parquímetro 
+				por estar estacionado por N minutos, 
+				donde N debe ser ingresado por el usuario.
+	-	Al ingresar el valor, este no debe estar vacío.
+	-	Solo debe mostrar el ultimo resultado ingresado 
+			y no en una grilla de datos.
+	DESARROLLO
+		CONSTANTES
+			CTEs
+				valorBase=1850 //DE 0 A 25
+				valorMinuto = 23 //fijo
+			VARs 
+				minutos
+				valorXminuto=ValorBase + minutos
+		PROCESO: 
+			
+			INPUT 
+					minutosUsuario //N minutos
+					VALIDACION 
+						minutosUsuario //no vacio
+		OUTPUT 
+			resultado //ultimo resultado
+
+		MVC 
+			MODELO //nacho seba
+				Parquimetro {
+					int valorBase=1850
+					int valorMinuto=23
+					int minutos=0;
+					metodo con retorno resultado
+				}
+			VISTAS //seba
+				vistaParquimetro 
+					form method post 
+						pide el input
+						con boton entrega resultado del controlador CalculoParquimetro(txt_minutos pasar a entero)
+							h1 Cobro parquimetro el canalla 
+							label Ingrese minutos 
+							input txt_minutos // son los minutos
+							input type submit 
+			CONTROLADOR //janvera
+				llamaVistaCobroParquimetro 
+				calculo 
+					int CalculoParquimetro(int minutos){
+
+						var total = valor base + ( minutos * valorMinuto)
+						return total
+					}
+					desplegar
+
+Ejercicio 2 
+	En una competencia atlética de velocidad el tiempo se mide 
+		en minutos, segundos y centésimas de segundo y el espacio recorrido se mide en metros. 
+	Diseñe un programa para determinar la velocidad promedio de un atleta en km/hr. 
+	Considere que: 
+		1 hora = 60 minutos, 1 minuto = 60 segundos, 1 segundo = 100 centésimas de segundo, 
+		1 kilometro = 1000 metros. Todos los datos requeridos son ingresados por el usuario. 
+		Para calcular el promedio se divide la distancia (km) por el tiempo (hr).
+
+	VARIABLES 
+		tiempoHora
+		tiempoMintutos	//min seg y centesimas double
+		tiempoSegundos 
+		distancia //en metros
+	PROCESO 
+		velocidadPromedio(tiempo,distancia) // distancia / tiempo En km/hor calculo
+		velocidadPromedio(double tiempoMintutos,double tiempoSegundos,double tiempoMilessima,double distancia) // distancia / tiempo En km/hor calculo
+			conversiones
+	OUTPUT
+		VELOCIDADpROMEDIO // EN km/hr
+
+	MVC
+		MODELO
+			CLASE 
+				recorrido{
+					hora
+					minuto
+					segundo
+					distancia
+				}
+		VISTA 
+			form
+				labels Hora minutos, segundos,
+				input txtHoras, txtMinutos, txtSegundos, txtDistancia
+		CONTROLADOR
+			funcion 
+				velocidadPromedio(double txtHoras,double txtMinutos,double txtSegundo,double txtDistancia){
+					pasar hora, minuto, segundo a kilometors
+					retorna kelometros por hora
+				}
+
+Ejercicio 3
+	Hacer un programa en el cual:
+	-	Ingrese un número, el cual no puede estar vacío. 
+	-	Si el número ingresado es menor a 50, entonces se triplica, 
+		en caso contrario, se divide por 4. 
+	-	El resultado se debe mostrar por pantalla en una grilla de datos 
+		(recuerde que la grilla de datos almacenara todos los datos que se ingresaron mientras el proyecto se encuentre en ejecución).
+
+	VARIABLES 
+		int numero //validar no vacio
+		int total
+	INPUT 
+		int numero //validar no vacio
+	PROCESO 
+		SI numero < 50 
+			total=numero*3
+		SI numero>50 
+			total=numero/4 
+	OUTPUT 
+		CRUD
+			PANTALLA SUPERIOR //ingreso de los datos
+			PANTALLA INFERIOR //grilla
+
+		
+		
