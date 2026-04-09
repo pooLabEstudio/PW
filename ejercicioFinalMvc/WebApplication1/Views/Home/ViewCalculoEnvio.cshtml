@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewData["Title"] = "Calculo de Envio";
+}
+
+<h1>vistaCalculoEnvio</h1>
+<div class="alert alert-info">
+    <p>
+        <strong>Información de Tarifas:</strong><br />
+        • Tarifa Base: $3.500 (Hasta 50 km y 10 kg).<br />
+        • Km Extra: $120 | Kg Extra: $2.000 (Sobre el límite).
+    </p>
+ </div>
+<form asp-controller="Home" asp-action="CalculoEnvio" method="post">
+      <div>
+            <label for="distancia">Distancia (km):</label>
+            <input type="number" name="distancia" required/>
+      </div>
+      <div>
+            <label for="txtPeso">Peso (kg):</label> 
+            <input type="number" name="peso" required />
+      </div>
+       <input type="submit" value="Calcular" />
+ </form> 
+ @if (ViewBag.ErrorMessage != null)
+ {
+     <h3 style="color:red;">@ViewBag.ErrorMessage</h3>
+ }
+
+ @if (ViewBag.Total != null)
+ {
+     <h2 style="color:green;">Total a Pagar: $@ViewBag.Total Pesos</h2>
+    <br />
+    <h2> distancia @ViewBag.distancia km</h2>
+    <h2> distancia extra @ViewBag.distanciaExtra km</h2> 
+    <h2> Peso @ViewBag.peso kg</h2>
+    <h2> peso extra @ViewBag.pesoExtra kg</h2>
+ }
+
+@if (ViewBag.Historial != null)
+{
+    <h3>Historial de Envíos</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Distancia</th>
+                <th>Peso</th>
+                <th>Extra KM</th>
+                <th>Extra Peso</th>
+                <th>Total a pagar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.Historial)
+            {
+                <tr>
+                    <td>@item.distancia km</td>
+                    <td>@item.peso kg</td>
+                    <td>@item.distanciaExtra km</td>
+                    <td>@item.pesoExtra kg</td>
+                    <td>@item.total </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

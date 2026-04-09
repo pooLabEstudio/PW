@@ -1,0 +1,158 @@
+🏋️ Ejercicio: Sistema de Liquidación de Envíos "FlashLogistics"
+Contexto: 
+    Una empresa de mensajería cobra según 
+        el peso del paquete 
+        y la distancia del envío. 
+        
+    Tu misión es crear la lógica para 
+        calcular el costo total 
+        y mostrar un historial de envíos.
+
+datos 
+    Tarifa Base ($ValorBase$): $3.500. (Es el cobro mínimo por existir el envío).
+    Límite de Distancia Base: 50 km (Distancia incluida en la tarifa base).
+    Valor por Kilómetro Extra : $120
+    Recargo por Sobrepeso: $2.000. (Se aplica solo si el peso es > 10 kg).
+    
+desarrollo
+    constantes 
+        tarifaBase = 3500 pesos
+        distanciaBase = 50 km // si <= 50 km
+        kmExtra = 120 pesos mas  //si > 50 km
+        pesoLimite= 10 kg
+        ValorPesoExtra = 2000 pesos //si el peso es > 10 kg=pesoLimite
+    variables
+        output
+            distanciaExtra // si es > 50 km
+            pesoExtra //si es > 10 kg
+            recargoDistancia // a calcular en proceso
+            recargoSobrePeso // a calcular en proceso 
+            total //total a pagar 
+        input 
+            historial //lista de objetos Paquete 
+            peso 
+            distancia 
+        proceso 
+            //DISTANCIA CORTA PESO JUSTO
+                distancia <= distanciaBase y peso <= pesoLimite
+                    total = tarifaBase 
+            //DISTANCIA MAS LARGO Y PESO JUSTO
+                distancia > distanciaBase y peso <= pesoLimite
+                    distanciaExtra= distancia - distanciaBase 
+                    recargoDistancia = distanciaExtra * kmExtra
+                    total = tarifabase + recargoDistancia 
+            //DISTANCIA MAS LARGA Y PESO MAYOR
+                distancia > distanciaBase y peso > pesoLimite
+                    //recargo distancia extra
+                        distanciaExtra= distancia - distanciaBase 
+                        recargoDistancia = distanciaExtra * kmExtra
+                    //recargo peso extra 
+                        pesoExtra = peso - pesoLimite 
+                        recargoSobrePeso = pesoExtra * ValorPesoExtra
+                //total
+                total= tarifabase + recargoDistancia + recargoSobrePeso
+            //DISTANCIA CORTA PERO PESO MAYOR 
+                distancia <= distanciaBase y peso > pesoLimite
+                    //recargo peso extra 
+                        pesoExtra = peso - pesoLimite 
+                        recargoSobrePeso = pesoExtra * ValorPesoExtra
+                    total= tarifabase + recargoSobrePeso
+            //añadir paquete al historial   
+                historial.add(paquete)  
+CLASE ENVIO 
+    atributos 
+        peso
+        distancia
+        pesoExtra=0
+        distanciaExtra=0
+        tarifaBase = 3500
+        distanciaBase = 50
+        kmExtra = 120
+        pesoLimite= 10 
+        ValorPesoExtra = 2000
+        total
+    metodos 
+        calculoDistanciaExtra(distancia)
+            distancia <= distanciaBase
+                distanciaExtra=0
+            else 
+                distanciaExtra= distancia - distanciaBase 
+            retorna distanciaExtra 
+        
+        calculoExcesoDistancia(distancia)
+            distanciaExtra=calculoDistanciaExtra(distancia)
+            retorna (distanciaExtra * kmExtra)
+
+        calculoPesoExtra(peso)
+            peso <= pesoLimite
+                pesoExtra=0
+            else 
+                pesoExtra = peso - pesoLimite
+            retorna pesoExtra
+        
+        calculoExcesoPeso(peso)
+            pesoExtra= calculoPesoExtra(peso)
+            retorna (pesoExtra * ValorPesoExtra)
+
+        calculoTotal(distancia,peso){
+                distanciaExtra=calculoDistanciaExtra(distancia)
+                pesoExtra=calculoPesoExtra(peso)
+
+                si distanciaExtra y pesoExtra 
+                    total= tarifaBase + (distanciaExtra * kmExtra) + (pesoExtra * ValorPesoExtra)
+                    
+                    si distancia extra y no peso extra 
+                        total= tarifaBase + (distanciaExtra * kmExtra) 
+                        retorna total 
+
+                    si no hay distancia y hay peso extra 
+                        total= tarifaBase + (pesoExtra * ValorPesoExtra)
+                        retorna total 
+
+                si no hay distancia extra ni peso extra 
+                    total= tarifaBase 
+                    retorna total 
+        }
+
+        optimiza calculo total 
+            metodo calculoTotal(peso, distancia) {
+                distExtra = calculoDistanciaExtra(distancia)
+                pExtra = calculoPesoExtra(peso)
+                total = tarifaBase // Empezamos con el mínimo
+                // Sumamos recargos solo si existen
+                total = total + (distExtra * kmExtra)
+                total = total + (pExtra * ValorPesoExtra)
+                retorna total
+            }
+
+MVC 
+    VISTA
+        calculo Costo de envio //vistaCalculoEnvio 
+            
+            despliegue valores fijos 
+                Tarifa Base ($ValorBase$): $3.500. (Es el cobro mínimo por existir el envío).
+                Límite de Distancia Base: 50 km (Distancia incluida en la tarifa base).
+                Valor por Kilómetro Extra : $120
+                Recargo por Sobrepeso: $2.000. (Se aplica solo si el peso es > 10 kg).
+            formulario post
+                input distancia txtDistancia
+                    validar no menor que 0
+                input peso txtPeso
+                    validar no menor que 0
+                input submit boton //presenta en pantalla 
+                    retorna
+                        output valorTotal                           txtTotal                //calculoTotal(distancia,peso)
+                        output distancia extra                      txtDistanciaExtra       // calculoDistanciaExtra(distancia)
+                        output valor cobro distancia extra          txtValorDistanciaExtra  // calculoExcesoDistancia(distancia)
+                        output peso extra                           txtPesoExtra            //calculoPesoExtra(peso)
+                        output valor cobro peso Extra               txtValorPesoExtra       // calculoExcesoPeso(pesoExtra)
+    MODELO
+        CLASE ENVIO
+    CONTROLADOR 
+        presentaSolucion(distancia,peso)
+            instancia objeto
+                paquete es un nuevo envio 
+            txtDistanciaExtra=paquete.calculoDistanciaExtra(distancia)
+            txtValorDistanciaExtra = paquete.calculoExcesoDistancia(distancia)
+            txtPesoExtra= paquete.calculoPesoExtra(peso)
+            txtValorPesoExtra  = paquete.calculoExcesoPeso(peso)
