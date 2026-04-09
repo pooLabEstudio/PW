@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PW_Ejercicios</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">PW_Ejercicios</a>
+                <div class="navbar-nav">
+                    <a class="nav-link" asp-controller="Home" asp-action="Ejercicio1">Ejercicio 1</a>
+                    <a class="nav-link" asp-controller="Home" asp-action="Ejercicio2">Ejercicio 2</a>
+                    <a class="nav-link" asp-controller="Home" asp-action="Ejercicio3">Ejercicio 3</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="mt-4 text-center text-muted">
+        <p>&copy; 2026 - PW_Ejercicios | nacho · seba · janvera</p>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

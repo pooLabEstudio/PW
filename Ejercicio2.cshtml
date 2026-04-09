@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Ejercicio 2 - Velocidad Promedio";
+}
+
+<h1>Velocidad Promedio del Atleta</h1>
+
+<form asp-controller="Home" asp-action="CalcularVelocidad" method="post">
+    <div>
+        <label>Horas</label>
+        <input type="number" name="txtHoras" />
+    </div>
+    <div>
+        <label>Minutos</label>
+        <input type="number" name="txtMinutos" />
+    </div>
+    <div>
+        <label>Segundos</label>
+        <input type="number" name="txtSegundos" />
+    </div>
+    <div>
+        <label>Centésimas de segundo</label>
+        <input type="number" name="txtCentesimas" />
+    </div>
+    <div>
+        <label>Distancia (metros)</label>
+        <input type="number" name="txtDistancia" />
+    </div>
+    <div>
+        <input type="submit" value="Calcular" />
+    </div>
+</form>
+
+<h2 style="color:green;">@ViewBag.resultado km/hr</h2>
