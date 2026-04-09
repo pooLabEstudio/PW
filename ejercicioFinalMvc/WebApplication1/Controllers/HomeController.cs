@@ -15,10 +15,8 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
-
         // Esto guarda todos los envíos realizados
         private static List<Envio> historial = new List<Envio>();
-
         [HttpPost]
         public IActionResult CalculoEnvio(double distancia, double peso )
         {
@@ -40,16 +38,13 @@ namespace WebApplication1.Controllers
             ViewBag.Total = resultadoTotal;
             ViewBag.distanciaExtra = kmExtras;
             ViewBag.pesoExtra = pesoExtra;
-
             // --- CORRECCIÓN CLAVE: Guarda los datos en el objeto ---
             paquete.distancia = distancia;
             paquete.peso = peso;
             paquete.total = resultadoTotal;
-
             //AGREGAMOS EL ENVIO AL HISTORIAL
             historial.Add(paquete);
             ViewBag.Historial = historial; // Enviamos la lista a la vista
-
             return View("ViewCalculoEnvio");
         }
 
